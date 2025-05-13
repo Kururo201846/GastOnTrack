@@ -11,7 +11,7 @@ plugins {
 android {
     namespace = "com.example.gast_on_track"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = 27.0.12077973//flutter.ndkVersion
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -44,4 +44,8 @@ android {
 
 flutter {
     source = "../.."
+}
+
+tasks.withType<JavaCompile> {
+    options.compilerArgs.add("-Xlint:-options")
 }
