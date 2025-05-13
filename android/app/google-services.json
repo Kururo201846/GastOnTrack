@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "466060674801",
+    "project_id": "gastontrack-fd06d",
+    "storage_bucket": "gastontrack-fd06d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:466060674801:android:7c3a35ed136eb6fd8fcb50",
+        "android_client_info": {
+          "package_name": "com.example.gast_on_track"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZzR9N1H9UmlvWaO5WXSljn7fN-jc-iA8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
