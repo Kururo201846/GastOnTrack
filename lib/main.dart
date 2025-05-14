@@ -4,13 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:gast_on_track/firebaseoption/firebase_options.dart';
 import 'package:gast_on_track/screens/auth/login_screen.dart';
 import 'package:gast_on_track/screens/auth/create_user_screen.dart';
+import 'package:gast_on_track/screens/auth/recover_password_screen.dart';
 import 'package:gast_on_track/screens/home/home_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MainApp());
 }
 
@@ -29,6 +28,7 @@ class MainApp extends StatelessWidget {
       home: const AuthWrapper(),
       routes: {
         '/login': (context) => const LoginScreen(),
+        '/recover_password': (context) => const RecoverPasswordScreen(),
         '/signup': (context) => const CreateUserScreen(),
         '/home': (context) => const HomeScreen(),
       },
@@ -49,11 +49,11 @@ class AuthWrapper extends StatelessWidget {
             body: Center(child: CircularProgressIndicator()),
           );
         }
-        
+
         if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {
           return const LoginScreen();
         }
-        
+
         return const HomeScreen();
       },
     );
