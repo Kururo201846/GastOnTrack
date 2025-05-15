@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:gast_on_track/themes/app_theme.dart';
 
 class RecoverPasswordScreen extends StatefulWidget {
   const RecoverPasswordScreen({super.key});
@@ -43,8 +44,6 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
         return 'No hay cuenta asociada a este email';
       case 'invalid-email':
         return 'Formato de email inválido';
-      case 'network-request-failed':
-        return 'Error de conexión. Verifica tu internet';
       default:
         return 'Error al enviar el correo. Intenta nuevamente';
     }
@@ -63,12 +62,12 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 40),
-                const Text(
+                Text(
                   'GastOnTrack',
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    color: AppTheme.primaryGreen,
                     letterSpacing: 1.5,
                   ),
                 ),
@@ -83,37 +82,27 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
                 if (!_emailSent) ...[
                   TextFormField(
                     controller: _emailController,
-                    decoration: const InputDecoration(
-                      labelText: null,
-                      prefixIcon: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.email),
-                          Text(' | ', style: TextStyle(color: Colors.grey)),
-                        ],
-                      ),
-                      border: UnderlineInputBorder(),
-                      filled: false,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.email, color: AppTheme.primaryGreen),
+                      border: const UnderlineInputBorder(),
                       hintText: 'Ingresa tu email registrado',
+                      hintStyle: TextStyle(color: Colors.grey[600]),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Por favor ingresa tu email';
                       }
-                      if (!RegExp(
-                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                      ).hasMatch(value)) {
+                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
                         return 'Email inválido';
                       }
                       return null;
                     },
-                    keyboardType: TextInputType.emailAddress,
                   ),
                   if (_errorMessage != null) ...[
                     const SizedBox(height: 10),
                     Text(
                       _errorMessage!,
-                      style: const TextStyle(color: Colors.red),
+                      style: TextStyle(color: Colors.red[700]),
                     ),
                   ],
                   const SizedBox(height: 40),
@@ -123,46 +112,48 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
                     child: ElevatedButton(
                       onPressed: _isLoading ? null : _sendPasswordResetEmail,
                       style: ElevatedButton.styleFrom(
-                        side: const BorderSide(
-                          color: Color.fromARGB(55, 0, 0, 0),
-                        ),
-                        backgroundColor: const Color.fromARGB(
-                          255,
-                          255,
-                          255,
-                          255,
-                        ),
+                        backgroundColor: AppTheme.primaryGreen,
+                        foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        elevation: 0,
                       ),
-                      child:
-                          _isLoading
-                              ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2,
-                                ),
-                              )
-                              : const Text(
-                                'Enviar',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
+                      child: _isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text('Enviar'),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: 170,
+                    height: 50,
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: AppTheme.primaryGreen),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: Text(
+                        'Cancelar',
+                        style: TextStyle(color: AppTheme.primaryGreen),
+                      ),
                     ),
                   ),
                 ] else ...[
-                  const Icon(Icons.check_circle, color: Colors.green, size: 60),
+                  Icon(Icons.check_circle, 
+                    color: AppTheme.primaryGreen, 
+                    size: 60
+                  ),
                   const SizedBox(height: 20),
-                  const Text(
+                  Text(
                     'Correo enviado',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 22, 
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.darkGreen,
+                    ),
                   ),
                   const SizedBox(height: 20),
                   const Padding(
@@ -175,23 +166,19 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
                   ),
                   const SizedBox(height: 40),
                   SizedBox(
-                    width: 170,
+                    width: double.infinity,
                     height: 50,
-                    child: ElevatedButton(
+                    child: OutlinedButton(
                       onPressed: () => Navigator.pop(context),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: AppTheme.primaryGreen),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Volver al login',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+                        style: TextStyle(color: AppTheme.primaryGreen),
                       ),
                     ),
                   ),

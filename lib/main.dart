@@ -6,6 +6,7 @@ import 'package:gast_on_track/screens/auth/login_screen.dart';
 import 'package:gast_on_track/screens/auth/create_user_screen.dart';
 import 'package:gast_on_track/screens/auth/recover_password_screen.dart';
 import 'package:gast_on_track/screens/home/home_screen.dart';
+import 'package:gast_on_track/themes/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,10 +22,7 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       title: 'Gast On Track',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
+      theme:AppTheme.lightTheme,
       home: const AuthWrapper(),
       routes: {
         '/login': (context) => const LoginScreen(),
@@ -42,7 +40,7 @@ class AuthWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.userChanges(),
+      stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(

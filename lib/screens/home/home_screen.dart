@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:gast_on_track/themes/app_theme.dart';
+import 'package:gast_on_track/screens/profile/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,23 +18,32 @@ class _HomeScreenState extends State<HomeScreen> {
     const PlaceholderWidget(title: 'Inicio'),
     const PlaceholderWidget(title: 'Ruleta'),
     const PlaceholderWidget(title: 'Escáner'),
-    const PlaceholderWidget(title: 'Perfil'),
+    const ProfileScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.cream,
       appBar: AppBar(
-        title: const Text('Welcome!'),
+        title: Text(
+          'Welcome!',
+          style: TextStyle(
+            color: AppTheme.darkGreen,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.menu),
+          icon: Icon(Icons.menu, color: AppTheme.darkGreen),
           onPressed: () => _showCompactMenu(context),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications),
-            onPressed: () {
-            },
+            icon: Icon(Icons.notifications, color: AppTheme.darkGreen),
+            onPressed: () {},
           ),
         ],
       ),
@@ -40,6 +51,13 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         type: BottomNavigationBarType.fixed,
+        backgroundColor: Colors.white,
+        selectedItemColor: AppTheme.primaryGreen,
+        unselectedItemColor: Colors.grey,
+        selectedLabelStyle: TextStyle(color: AppTheme.primaryGreen),
+        unselectedLabelStyle: TextStyle(color: Colors.grey),
+        showUnselectedLabels: true,
+        elevation: 1,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -64,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showCompactMenu(BuildContext context) {
-final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
 
     showMenu(
       context: context,
@@ -76,23 +94,29 @@ final RenderBox overlay = Overlay.of(context).context.findRenderObject() as Rend
         Offset.zero & overlay.size,
       ),
       items: [
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'settings',
           child: Row(
             children: [
-              Icon(Icons.settings, size: 20),
-              SizedBox(width: 8),
-              Text('Configuración'),
+              Icon(Icons.settings, size: 20, color: AppTheme.primaryGreen),
+              const SizedBox(width: 8),
+              Text(
+                'Configuración',
+                style: TextStyle(color: AppTheme.darkGreen),
+              ),
             ],
           ),
         ),
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'password',
           child: Row(
             children: [
-              Icon(Icons.lock, size: 20),
-              SizedBox(width: 8),
-              Text('Cambiar contraseña'),
+              Icon(Icons.lock, size: 20, color: AppTheme.primaryGreen),
+              const SizedBox(width: 8),
+              Text(
+                'Cambiar contraseña',
+                style: TextStyle(color: AppTheme.darkGreen),
+              ),
             ],
           ),
         ),
@@ -100,9 +124,12 @@ final RenderBox overlay = Overlay.of(context).context.findRenderObject() as Rend
           value: 'logout',
           child: Row(
             children: [
-              const Icon(Icons.logout, size: 20),
+              Icon(Icons.logout, size: 20, color: AppTheme.primaryGreen),
               const SizedBox(width: 8),
-              const Text('Cerrar sesión'),
+              Text(
+                'Cerrar sesión',
+                style: TextStyle(color: AppTheme.darkGreen),
+              ),
             ],
           ),
         ),
@@ -111,7 +138,9 @@ final RenderBox overlay = Overlay.of(context).context.findRenderObject() as Rend
       if (value == 'logout') {
         FirebaseAuth.instance.signOut();
       } else if (value == 'settings') {
+
       } else if (value == 'password') {
+
       }
     });
   }
@@ -130,10 +159,19 @@ class PlaceholderWidget extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(fontSize: 24),
+            style: TextStyle(
+              fontSize: 24,
+              color: AppTheme.darkGreen,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 20),
-          const Text('Contenido en desarrollo'),
+          Text(
+            'Contenido en desarrollo',
+            style: TextStyle(
+              color: Colors.grey[600],
+            ),
+          ),
         ],
       ),
     );

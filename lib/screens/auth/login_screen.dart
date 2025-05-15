@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:gast_on_track/themes/app_theme.dart';
 
 class LoginScreen extends StatefulWidget {
   final VoidCallback? onLoginSuccess;
@@ -45,15 +46,6 @@ class _LoginScreenState extends State<LoginScreen> {
         case 'invalid-email':
           errorMessage = 'Email no válido';
           break;
-        case 'user-disabled':
-          errorMessage = 'Usuario deshabilitado';
-          break;
-        case 'too-many-requests':
-          errorMessage = 'Demasiados intentos. Intenta más tarde';
-          break;
-        case 'network-request-failed':
-          errorMessage = 'Error de conexión. Verifica tu internet';
-          break;
         default:
           errorMessage = 'Error al iniciar sesión: ${e.code}';
       }
@@ -61,10 +53,9 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(errorMessage),
-          duration: const Duration(seconds: 3),
+          backgroundColor: AppTheme.darkGreen,
         ),
       );
-      
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -85,12 +76,12 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 40),
-                const Text(
+                Text(
                   'GastOnTrack',
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    color: AppTheme.primaryGreen,
                     letterSpacing: 1.5,
                   ),
                 ),
@@ -103,18 +94,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 100),
                 TextFormField(
                   controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: null,
-                    prefixIcon: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.email),
-                        Text(' | ', style: TextStyle(color: Colors.grey)),
-                      ],
-                    ),
-                    border: UnderlineInputBorder(),
-                    filled: false,
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.email, color: AppTheme.primaryGreen),
+                    border: const UnderlineInputBorder(),
                     hintText: 'Username',
+                    hintStyle: TextStyle(color: Colors.grey[600]),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) return 'Ingresa tu email';
@@ -129,21 +113,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
-                    labelText: null,
-                    prefixIcon: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.lock),
-                        Text(' | ', style: TextStyle(color: Colors.grey)),
-                      ],
-                    ),
-                    border: UnderlineInputBorder(),
-                    filled: false,
-                    hintText: 'Password',
+                    prefixIcon: Icon(Icons.lock, color: AppTheme.primaryGreen),
                     suffixIcon: IconButton(
-                      icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+                      icon: Icon(
+                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                        color: AppTheme.primaryGreen,
+                      ),
                       onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                     ),
+                    border: const UnderlineInputBorder(),
+                    hintText: 'Password',
+                    hintStyle: TextStyle(color: Colors.grey[600]),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) return 'Ingresa tu contraseña';
@@ -158,9 +138,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () {
                       Navigator.pushNamed(context, '/recover_password');
                     },
-                    child: const Text(
+                    child: Text(
                       'Forgot Password?',
-                      style: TextStyle(color: Colors.blue),
+                      style: TextStyle(color: AppTheme.black),
                     ),
                   ),
                 ),
@@ -171,30 +151,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _signIn,
                     style: ElevatedButton.styleFrom(
-                      side: const BorderSide(color: Color.fromARGB(55, 0, 0, 0)),
-                      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                      backgroundColor: AppTheme.primaryGreen,
+                      foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      elevation: 0,
                     ),
                     child: _isLoading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : const Text(
-                            'Sign In',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text('Sign In'),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -206,19 +171,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       Navigator.pushNamed(context, '/signup');
                     },
                     style: OutlinedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                      side: const BorderSide(color: Colors.black),
+                      side: BorderSide(color: AppTheme.primaryGreen),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Sign Up',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 255, 255, 255),
-                      ),
+                      style: TextStyle(color: AppTheme.primaryGreen),
                     ),
                   ),
                 ),
