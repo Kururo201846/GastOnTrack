@@ -29,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text(
           'Welcome!',
           style: TextStyle(
-            color: AppTheme.darkGreen,
+            color: AppTheme.primaryBlue,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -37,12 +37,12 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.menu, color: AppTheme.darkGreen),
+          icon: Icon(Icons.menu, color: AppTheme.primaryBlue),
           onPressed: () => _showCompactMenu(context),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.notifications, color: AppTheme.darkGreen),
+            icon: Icon(Icons.notifications, color: AppTheme.primaryBlue),
             onPressed: () {},
           ),
         ],
@@ -52,17 +52,14 @@ class _HomeScreenState extends State<HomeScreen> {
         currentIndex: _currentIndex,
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.white,
-        selectedItemColor: AppTheme.primaryGreen,
+        selectedItemColor: AppTheme.primaryBlue,
         unselectedItemColor: Colors.grey,
-        selectedLabelStyle: TextStyle(color: AppTheme.primaryGreen),
+        selectedLabelStyle: TextStyle(color: AppTheme.primaryBlue),
         unselectedLabelStyle: TextStyle(color: Colors.grey),
         showUnselectedLabels: true,
         elevation: 1,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Inicio',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
           BottomNavigationBarItem(
             icon: Icon(Icons.view_carousel),
             label: 'Ruleta',
@@ -71,10 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.qr_code_scanner),
             label: 'Escanear',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Perfil',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
         ],
         onTap: (index) => setState(() => _currentIndex = index),
       ),
@@ -82,14 +76,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showCompactMenu(BuildContext context) {
-    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
 
     showMenu(
       context: context,
       position: RelativeRect.fromRect(
         Rect.fromPoints(
           const Offset(16, kToolbarHeight),
-          const Offset(16, kToolbarHeight + 40), 
+          const Offset(16, kToolbarHeight + 40),
         ),
         Offset.zero & overlay.size,
       ),
@@ -98,11 +93,11 @@ class _HomeScreenState extends State<HomeScreen> {
           value: 'settings',
           child: Row(
             children: [
-              Icon(Icons.settings, size: 20, color: AppTheme.primaryGreen),
+              Icon(Icons.settings, size: 20, color: AppTheme.primaryBlue),
               const SizedBox(width: 8),
               Text(
                 'Configuración',
-                style: TextStyle(color: AppTheme.darkGreen),
+                style: TextStyle(color: AppTheme.primaryBlue),
               ),
             ],
           ),
@@ -111,11 +106,11 @@ class _HomeScreenState extends State<HomeScreen> {
           value: 'password',
           child: Row(
             children: [
-              Icon(Icons.lock, size: 20, color: AppTheme.primaryGreen),
+              Icon(Icons.lock, size: 20, color: AppTheme.primaryBlue),
               const SizedBox(width: 8),
               Text(
                 'Cambiar contraseña',
-                style: TextStyle(color: AppTheme.darkGreen),
+                style: TextStyle(color: AppTheme.primaryBlue),
               ),
             ],
           ),
@@ -124,11 +119,11 @@ class _HomeScreenState extends State<HomeScreen> {
           value: 'logout',
           child: Row(
             children: [
-              Icon(Icons.logout, size: 20, color: AppTheme.primaryGreen),
+              Icon(Icons.logout, size: 20, color: AppTheme.primaryBlue),
               const SizedBox(width: 8),
               Text(
                 'Cerrar sesión',
-                style: TextStyle(color: AppTheme.darkGreen),
+                style: TextStyle(color: AppTheme.primaryBlue),
               ),
             ],
           ),
@@ -138,10 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (value == 'logout') {
         FirebaseAuth.instance.signOut();
       } else if (value == 'settings') {
-
-      } else if (value == 'password') {
-
-      }
+      } else if (value == 'password') {}
     });
   }
 }
@@ -161,16 +153,14 @@ class PlaceholderWidget extends StatelessWidget {
             title,
             style: TextStyle(
               fontSize: 24,
-              color: AppTheme.darkGreen,
+              color: AppTheme.primaryBlue,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 20),
           Text(
             'Contenido en desarrollo',
-            style: TextStyle(
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(color: Colors.grey[600]),
           ),
         ],
       ),

@@ -11,10 +11,11 @@ class ProfileScreen extends StatelessWidget {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return null;
 
-    final snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .get();
+    final snapshot =
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
 
     if (!snapshot.exists) return null;
 
@@ -40,14 +41,17 @@ class ProfileScreen extends StatelessWidget {
           child: ListView(
             children: [
               const SizedBox(height: 20),
-              Icon(Icons.person, size: 100, color: AppTheme.primaryGreen),
+              Icon(Icons.person, size: 100, color: AppTheme.primaryBlue),
               const SizedBox(height: 20),
               _buildField('Nombre', profile.firstName),
               _buildField('Apellido', profile.lastName),
               _buildField('Correo', profile.email),
               _buildField('Teléfono', profile.phone),
               _buildField('País', profile.country),
-              _buildField('Fecha de registro', profile.createdAt?.toLocal().toString().split(' ').first ?? '-'),
+              _buildField(
+                'Fecha de registro',
+                profile.createdAt?.toLocal().toString().split(' ').first ?? '-',
+              ),
             ],
           ),
         );
@@ -59,18 +63,20 @@ class ProfileScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: AppTheme.darkGreen,
-              fontSize: 16,
-            )),
+        Text(
+          label,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: AppTheme.primaryBlue,
+            fontSize: 16,
+          ),
+        ),
         const SizedBox(height: 4),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
             color: Colors.white,
-            border: Border.all(color: AppTheme.primaryGreen),
+            border: Border.all(color: AppTheme.primaryBlue),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(value, style: const TextStyle(fontSize: 16)),

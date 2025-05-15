@@ -19,22 +19,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _signIn() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     setState(() => _isLoading = true);
-    
+
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
-      
+
       if (mounted) {
         widget.onLoginSuccess?.call();
       }
-      
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
-      
+
       String errorMessage;
       switch (e.code) {
         case 'user-not-found':
@@ -49,11 +48,11 @@ class _LoginScreenState extends State<LoginScreen> {
         default:
           errorMessage = 'Error al iniciar sesión: ${e.code}';
       }
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(errorMessage),
-          backgroundColor: AppTheme.darkGreen,
+          backgroundColor: AppTheme.primaryBlue,
         ),
       );
     } finally {
@@ -81,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
-                    color: AppTheme.primaryGreen,
+                    color: AppTheme.primaryBlue,
                     letterSpacing: 1.5,
                   ),
                 ),
@@ -95,14 +94,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextFormField(
                   controller: _emailController,
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.email, color: AppTheme.primaryGreen),
+                    prefixIcon: Icon(Icons.email, color: AppTheme.primaryBlue),
                     border: const UnderlineInputBorder(),
                     hintText: 'Username',
                     hintStyle: TextStyle(color: Colors.grey[600]),
                   ),
                   validator: (value) {
-                    if (value == null || value.isEmpty) return 'Ingresa tu email';
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                    if (value == null || value.isEmpty)
+                      return 'Ingresa tu email';
+                    if (!RegExp(
+                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                    ).hasMatch(value)) {
                       return 'Email inválido';
                     }
                     return null;
@@ -113,20 +115,26 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.lock, color: AppTheme.primaryGreen),
+                    prefixIcon: Icon(Icons.lock, color: AppTheme.primaryBlue),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                        color: AppTheme.primaryGreen,
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: AppTheme.primaryBlue,
                       ),
-                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                      onPressed:
+                          () => setState(
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
                     ),
                     border: const UnderlineInputBorder(),
                     hintText: 'Password',
                     hintStyle: TextStyle(color: Colors.grey[600]),
                   ),
                   validator: (value) {
-                    if (value == null || value.isEmpty) return 'Ingresa tu contraseña';
+                    if (value == null || value.isEmpty)
+                      return 'Ingresa tu contraseña';
                     if (value.length < 6) return 'Mínimo 6 caracteres';
                     return null;
                   },
@@ -140,7 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                     child: Text(
                       'Forgot Password?',
-                      style: TextStyle(color: AppTheme.black),
+                      style: TextStyle(color: AppTheme.textPrimary),
                     ),
                   ),
                 ),
@@ -151,15 +159,18 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _signIn,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryGreen,
+                      backgroundColor: AppTheme.primaryBlue,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: _isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text('Sign In'),
+                    child:
+                        _isLoading
+                            ? const CircularProgressIndicator(
+                              color: Colors.white,
+                            )
+                            : const Text('Sign In'),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -171,14 +182,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       Navigator.pushNamed(context, '/signup');
                     },
                     style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: AppTheme.primaryGreen),
+                      side: BorderSide(color: AppTheme.primaryBlue),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     child: Text(
                       'Sign Up',
-                      style: TextStyle(color: AppTheme.primaryGreen),
+                      style: TextStyle(color: AppTheme.primaryBlue),
                     ),
                   ),
                 ),

@@ -1,49 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 class AppTheme {
   // Paleta de colores
-  static const Color primaryGreen = Color(0xFF4CAF50);
-  static const Color lightGreen = Color(0xFF81C784);
-  static const Color darkGreen = Color(0xFF388E3C);
+  static const Color primaryBlue = Color(0xFF00A8E8);
+  static const Color lightGray = Color(0xFFF4F6F8);
+  static const Color white = Color(0xFFFFFFFF);
   static const Color cream = Color.fromARGB(255, 255, 255, 255);
   static const Color lightCream = Color.fromARGB(255, 255, 255, 255);
-  static const Color darkCream = Color(0xFFE6D8B5);
-  static const Color accentGreen = Color(0xFF8BC34A);
-  static const Color black = Color.fromARGB(255, 0, 0, 0);
+  static const Color textPrimary = Color(0xFF2E2E2E); // Texto principal
+  static const Color textSecondary = Color(0xFF7D7D7D); // Texto secundario
+  static const Color successGreen = Color(
+    0xFF4BB543,
+  ); // Verde para acciones exitosas
+  static const Color errorRed = Color(0xFFFF4C4C);
 
   static ThemeData get lightTheme {
     return ThemeData(
       // Esquema de colores principal
       colorScheme: ColorScheme.light(
         // Colores principales
-        primary: primaryGreen,
+        primary: primaryBlue,
         onPrimary: Colors.white,
-        primaryContainer: darkGreen,
+        primaryContainer: primaryBlue,
         onPrimaryContainer: Colors.white,
-        
+
         // Colores secundarios
-        secondary: accentGreen,
-        onSecondary: Colors.black,
-        secondaryContainer: lightGreen,
-        onSecondaryContainer: Colors.black,
-        
+        secondary: successGreen,
+        onSecondary: Colors.white,
+        secondaryContainer: white,
+        onSecondaryContainer: textPrimary,
+
         // Superficies
-        surface: lightCream,
-        onSurface: Colors.black,
+        surface: white,
+        onSurface: textPrimary,
         surfaceContainerHighest: cream,
-        onSurfaceVariant: Colors.black87,
-        
+        onSurfaceVariant: textPrimary,
+
         // Fondo
-        background: lightCream,
-        onBackground: Colors.black,
+        background: lightGray,
+        onBackground: textPrimary,
       ),
 
       // Configuración de scaffold
-      scaffoldBackgroundColor: cream,
+      scaffoldBackgroundColor: lightGray,
 
       // AppBar
       appBarTheme: const AppBarTheme(
-        backgroundColor: primaryGreen,
+        backgroundColor: primaryBlue,
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
@@ -53,7 +57,7 @@ class AppTheme {
       // Botones
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: primaryGreen,
+          backgroundColor: primaryBlue,
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -64,8 +68,8 @@ class AppTheme {
 
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: primaryGreen,
-          side: const BorderSide(color: primaryGreen),
+          foregroundColor: primaryBlue,
+          side: const BorderSide(color: primaryBlue),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -81,67 +85,55 @@ class AppTheme {
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        labelStyle: const TextStyle(color: Colors.black54),
-        hintStyle: const TextStyle(color: Colors.black38),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
+        labelStyle: const TextStyle(color: textSecondary),
+        hintStyle: const TextStyle(color: Color(0x997D7D7D)),
       ),
 
       // Tipografía
       textTheme: const TextTheme(
         displayLarge: TextStyle(
-          fontSize: 32, 
-          fontWeight: FontWeight.bold, 
-          color: Colors.black,
+          fontSize: 32,
+          fontWeight: FontWeight.bold,
+          color: textPrimary,
           letterSpacing: -0.5,
         ),
         displayMedium: TextStyle(
-          fontSize: 24, 
-          fontWeight: FontWeight.bold, 
-          color: Colors.black,
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          color: textPrimary,
         ),
-        bodyLarge: TextStyle(
-          fontSize: 16, 
-          color: Colors.black87,
-          height: 1.5,
-        ),
-        bodyMedium: TextStyle(
-          fontSize: 14, 
-          color: Colors.black87,
-          height: 1.5,
-        ),
+        bodyLarge: TextStyle(fontSize: 16, color: textPrimary, height: 1.5),
+        bodyMedium: TextStyle(fontSize: 14, color: textPrimary, height: 1.5),
         labelLarge: TextStyle(
-          fontSize: 14, 
-          fontWeight: FontWeight.bold, 
+          fontSize: 14,
+          fontWeight: FontWeight.bold,
           color: Colors.white,
         ),
       ),
 
       // Iconos
-      iconTheme: const IconThemeData(
-        color: primaryGreen,
-        size: 24,
-      ),
+      iconTheme: const IconThemeData(color: primaryBlue, size: 24),
 
       // Tarjetas
       cardTheme: CardTheme(
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         color: lightCream,
         margin: const EdgeInsets.all(8),
       ),
-      
+
       // Diálogos
       dialogTheme: DialogTheme(
         backgroundColor: lightCream,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         titleTextStyle: const TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.bold,
-          color: Colors.black,
+          color: textPrimary,
         ),
       ),
 

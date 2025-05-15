@@ -67,7 +67,7 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
-                    color: AppTheme.primaryGreen,
+                    color: AppTheme.primaryBlue,
                     letterSpacing: 1.5,
                   ),
                 ),
@@ -83,7 +83,10 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
                   TextFormField(
                     controller: _emailController,
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.email, color: AppTheme.primaryGreen),
+                      prefixIcon: Icon(
+                        Icons.email,
+                        color: AppTheme.primaryBlue,
+                      ),
                       border: const UnderlineInputBorder(),
                       hintText: 'Ingresa tu email registrado',
                       hintStyle: TextStyle(color: Colors.grey[600]),
@@ -92,7 +95,9 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
                       if (value == null || value.isEmpty) {
                         return 'Por favor ingresa tu email';
                       }
-                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                      if (!RegExp(
+                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                      ).hasMatch(value)) {
                         return 'Email inválido';
                       }
                       return null;
@@ -112,15 +117,18 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
                     child: ElevatedButton(
                       onPressed: _isLoading ? null : _sendPasswordResetEmail,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.primaryGreen,
+                        backgroundColor: AppTheme.primaryBlue,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: _isLoading
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text('Enviar'),
+                      child:
+                          _isLoading
+                              ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                              : const Text('Enviar'),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -130,29 +138,30 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
                     child: OutlinedButton(
                       onPressed: () => Navigator.pop(context),
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: AppTheme.primaryGreen),
+                        side: BorderSide(color: AppTheme.primaryBlue),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
                       child: Text(
                         'Cancelar',
-                        style: TextStyle(color: AppTheme.primaryGreen),
+                        style: TextStyle(color: AppTheme.primaryBlue),
                       ),
                     ),
                   ),
                 ] else ...[
-                  Icon(Icons.check_circle, 
-                    color: AppTheme.primaryGreen, 
-                    size: 60
+                  Icon(
+                    Icons.check_circle,
+                    color: AppTheme.primaryBlue,
+                    size: 60,
                   ),
                   const SizedBox(height: 20),
                   Text(
                     'Correo enviado',
                     style: TextStyle(
-                      fontSize: 22, 
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      color: AppTheme.darkGreen,
+                      color: AppTheme.primaryBlue,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -171,14 +180,14 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
                     child: OutlinedButton(
                       onPressed: () => Navigator.pop(context),
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: AppTheme.primaryGreen),
+                        side: BorderSide(color: AppTheme.primaryBlue),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
                       child: Text(
                         'Volver al login',
-                        style: TextStyle(color: AppTheme.primaryGreen),
+                        style: TextStyle(color: AppTheme.primaryBlue),
                       ),
                     ),
                   ),

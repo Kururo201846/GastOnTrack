@@ -36,10 +36,11 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
 
     setState(() => _isLoading = true);
     try {
-      UserCredential credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+      UserCredential credential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+          );
 
       final user = credential.user;
       if (user != null) {
@@ -78,7 +79,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(errorMessage),
-          backgroundColor: AppTheme.darkGreen,
+          backgroundColor: AppTheme.primaryBlue,
         ),
       );
     } finally {
@@ -103,27 +104,47 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
-                    color: AppTheme.darkGreen,
+                    color: AppTheme.primaryBlue,
                   ),
                 ),
                 const SizedBox(height: 60),
-                Image.asset('assets/images/cerdito.png', height: 140, width: 140),
+                Image.asset(
+                  'assets/images/cerdito.png',
+                  height: 140,
+                  width: 140,
+                ),
                 const SizedBox(height: 40),
 
                 _buildTextField(_firstNameController, 'Nombre'),
                 _buildTextField(_lastNameController, 'Apellido'),
-                _buildTextField(_phoneController, 'Teléfono', keyboardType: TextInputType.phone),
+                _buildTextField(
+                  _phoneController,
+                  'Teléfono',
+                  keyboardType: TextInputType.phone,
+                ),
                 _buildTextField(_countryController, 'País'),
                 _buildTextField(_emailController, 'Email', isEmail: true),
 
                 const SizedBox(height: 16),
-                _buildPasswordField(_passwordController, 'Password', _obscurePassword, () {
-                  setState(() => _obscurePassword = !_obscurePassword);
-                }),
+                _buildPasswordField(
+                  _passwordController,
+                  'Password',
+                  _obscurePassword,
+                  () {
+                    setState(() => _obscurePassword = !_obscurePassword);
+                  },
+                ),
                 const SizedBox(height: 16),
-                _buildPasswordField(_confirmPasswordController, 'Confirmar Password', _obscureConfirmPassword, () {
-                  setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
-                }),
+                _buildPasswordField(
+                  _confirmPasswordController,
+                  'Confirmar Password',
+                  _obscureConfirmPassword,
+                  () {
+                    setState(
+                      () => _obscureConfirmPassword = !_obscureConfirmPassword,
+                    );
+                  },
+                ),
 
                 const SizedBox(height: 30),
                 SizedBox(
@@ -132,15 +153,18 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _createAccount,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryGreen,
+                      backgroundColor: AppTheme.primaryBlue,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: _isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text('Crear Cuenta'),
+                    child:
+                        _isLoading
+                            ? const CircularProgressIndicator(
+                              color: Colors.white,
+                            )
+                            : const Text('Crear Cuenta'),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -150,12 +174,15 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                   child: OutlinedButton(
                     onPressed: () => Navigator.pop(context),
                     style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: AppTheme.primaryGreen),
+                      side: BorderSide(color: AppTheme.primaryBlue),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: Text('Cancelar', style: TextStyle(color: AppTheme.primaryGreen)),
+                    child: Text(
+                      'Cancelar',
+                      style: TextStyle(color: AppTheme.primaryBlue),
+                    ),
                   ),
                 ),
               ],
@@ -166,15 +193,19 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String hint,
-      {TextInputType keyboardType = TextInputType.text, bool isEmail = false}) {
+  Widget _buildTextField(
+    TextEditingController controller,
+    String hint, {
+    TextInputType keyboardType = TextInputType.text,
+    bool isEmail = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: TextFormField(
         controller: controller,
         keyboardType: keyboardType,
         decoration: InputDecoration(
-          prefixIcon: Icon(Icons.person, color: AppTheme.primaryGreen),
+          prefixIcon: Icon(Icons.person, color: AppTheme.primaryBlue),
           border: const UnderlineInputBorder(),
           hintText: hint,
           hintStyle: TextStyle(color: Colors.grey[600]),
@@ -191,14 +222,22 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
     );
   }
 
-  Widget _buildPasswordField(TextEditingController controller, String hint, bool obscure, VoidCallback toggle) {
+  Widget _buildPasswordField(
+    TextEditingController controller,
+    String hint,
+    bool obscure,
+    VoidCallback toggle,
+  ) {
     return TextFormField(
       controller: controller,
       obscureText: obscure,
       decoration: InputDecoration(
-        prefixIcon: Icon(Icons.lock, color: AppTheme.primaryGreen),
+        prefixIcon: Icon(Icons.lock, color: AppTheme.primaryBlue),
         suffixIcon: IconButton(
-          icon: Icon(obscure ? Icons.visibility_off : Icons.visibility, color: AppTheme.primaryGreen),
+          icon: Icon(
+            obscure ? Icons.visibility_off : Icons.visibility,
+            color: AppTheme.primaryBlue,
+          ),
           onPressed: toggle,
         ),
         border: const UnderlineInputBorder(),
