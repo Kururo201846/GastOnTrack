@@ -27,10 +27,10 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: AppTheme.cream,
       appBar: AppBar(
         title: Text(
-          'Welcome!',
+          'Gast On Track',
           style: TextStyle(
             color: AppTheme.primaryBlue,
-            fontSize: 20,
+            fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
         ),

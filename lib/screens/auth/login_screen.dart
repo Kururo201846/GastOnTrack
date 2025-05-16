@@ -100,8 +100,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     hintStyle: TextStyle(color: Colors.grey[600]),
                   ),
                   validator: (value) {
-                    if (value == null || value.isEmpty)
+                    if (value == null || value.isEmpty) {
                       return 'Ingresa tu email';
+                    }
                     if (!RegExp(
                       r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
                     ).hasMatch(value)) {
@@ -123,19 +124,23 @@ class _LoginScreenState extends State<LoginScreen> {
                             : Icons.visibility,
                         color: AppTheme.primaryBlue,
                       ),
-                      onPressed:
-                          () => setState(
-                            () => _obscurePassword = !_obscurePassword,
-                          ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
                     ),
                     border: const UnderlineInputBorder(),
                     hintText: 'Password',
                     hintStyle: TextStyle(color: Colors.grey[600]),
                   ),
                   validator: (value) {
-                    if (value == null || value.isEmpty)
+                    if (value == null || value.isEmpty) {
                       return 'Ingresa tu contraseña';
-                    if (value.length < 6) return 'Mínimo 6 caracteres';
+                    }
+                    if (value.length < 6) {
+                      return 'Mínimo 6 caracteres';
+                    }
                     return null;
                   },
                 ),
@@ -165,12 +170,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child:
-                        _isLoading
-                            ? const CircularProgressIndicator(
-                              color: Colors.white,
-                            )
-                            : const Text('Sign In'),
+                    child: _isLoading
+                        ? const CircularProgressIndicator(
+                            color: Colors.white,
+                          )
+                        : const Text('Sign In'),
                   ),
                 ),
                 const SizedBox(height: 16),

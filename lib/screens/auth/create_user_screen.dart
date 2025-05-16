@@ -19,18 +19,37 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _countryController = TextEditingController();
 
+  // Lista de países en orden alfabético
+  final List<String> countries = [
+    'Argentina',
+    'Brasil',
+    'Chile',
+    'Colombia',
+    'México'
+  ];
+  String _selectedCountry = 'Chile';
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
+  final Map<String, IconData> fieldIcons = {
+    'firstName': Icons.person_outline,
+    'lastName': Icons.person_outline,
+    'phone': Icons.phone_outlined,
+    'email': Icons.email_outlined,
+    'country': Icons.location_on_outlined,
+    'password': Icons.lock_outline,
+  };
+
   Future<void> _createAccount() async {
     if (!_formKey.currentState!.validate()) return;
     if (_passwordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Las contraseñas no coinciden')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Las contraseñas no coinciden')),
+        );
+      }
       return;
     }
 
@@ -50,7 +69,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
           firstName: _firstNameController.text.trim(),
           lastName: _lastNameController.text.trim(),
           phone: _phoneController.text.trim(),
-          country: _countryController.text.trim(),
+          country: _selectedCountry,
           createdAt: DateTime.now(),
         );
 
@@ -59,7 +78,9 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
             .doc(user.uid)
             .set(userProfile.toMap());
 
-        Navigator.pop(context);
+        if (mounted) {
+          Navigator.pop(context);
+        }
       }
     } on FirebaseAuthException catch (e) {
       String errorMessage;
@@ -76,14 +97,18 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
         default:
           errorMessage = 'Error al crear la cuenta: ${e.message}';
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(errorMessage),
-          backgroundColor: AppTheme.primaryBlue,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: AppTheme.primaryBlue,
+          ),
+        );
+      }
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -115,15 +140,23 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                 ),
                 const SizedBox(height: 40),
 
-                _buildTextField(_firstNameController, 'Nombre'),
-                _buildTextField(_lastNameController, 'Apellido'),
+                _buildTextField(_firstNameController, 'Nombre', fieldName: 'firstName'),
+                _buildTextField(_lastNameController, 'Apellido', fieldName: 'lastName'),
                 _buildTextField(
                   _phoneController,
                   'Teléfono',
+                  fieldName: 'phone',
                   keyboardType: TextInputType.phone,
                 ),
-                _buildTextField(_countryController, 'País'),
-                _buildTextField(_emailController, 'Email', isEmail: true),
+
+                _buildCountryDropdown(),
+                
+                _buildTextField(
+                  _emailController, 
+                  'Email', 
+                  fieldName: 'email', 
+                  isEmail: true
+                ),
 
                 const SizedBox(height: 16),
                 _buildPasswordField(
@@ -159,12 +192,11 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child:
-                        _isLoading
-                            ? const CircularProgressIndicator(
-                              color: Colors.white,
-                            )
-                            : const Text('Crear Cuenta'),
+                    child: _isLoading
+                        ? const CircularProgressIndicator(
+                            color: Colors.white,
+                          )
+                        : const Text('Crear Cuenta'),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -196,6 +228,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
   Widget _buildTextField(
     TextEditingController controller,
     String hint, {
+    required String fieldName,
     TextInputType keyboardType = TextInputType.text,
     bool isEmail = false,
   }) {
@@ -205,7 +238,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
         controller: controller,
         keyboardType: keyboardType,
         decoration: InputDecoration(
-          prefixIcon: Icon(Icons.person, color: AppTheme.primaryBlue),
+          prefixIcon: Icon(fieldIcons[fieldName], color: AppTheme.primaryBlue),
           border: const UnderlineInputBorder(),
           hintText: hint,
           hintStyle: TextStyle(color: Colors.grey[600]),
@@ -215,6 +248,39 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
           if (isEmail &&
               !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
             return 'Email inválido';
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  Widget _buildCountryDropdown() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: DropdownButtonFormField<String>(
+        value: _selectedCountry,
+        icon: Icon(Icons.arrow_drop_down, color: AppTheme.primaryBlue),
+        decoration: InputDecoration(
+          prefixIcon: Icon(fieldIcons['country'], color: AppTheme.primaryBlue),
+          border: const UnderlineInputBorder(),
+          hintText: 'País',
+          hintStyle: TextStyle(color: Colors.grey[600]),
+        ),
+        items: countries.map((String country) {
+          return DropdownMenuItem<String>(
+            value: country,
+            child: Text(country),
+          );
+        }).toList(),
+        onChanged: (String? newValue) {
+          setState(() {
+            _selectedCountry = newValue!;
+          });
+        },
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Por favor selecciona un país';
           }
           return null;
         },
@@ -232,7 +298,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
       controller: controller,
       obscureText: obscure,
       decoration: InputDecoration(
-        prefixIcon: Icon(Icons.lock, color: AppTheme.primaryBlue),
+        prefixIcon: Icon(fieldIcons['password'], color: AppTheme.primaryBlue),
         suffixIcon: IconButton(
           icon: Icon(
             obscure ? Icons.visibility_off : Icons.visibility,
@@ -260,7 +326,6 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
     _firstNameController.dispose();
     _lastNameController.dispose();
     _phoneController.dispose();
-    _countryController.dispose();
     super.dispose();
   }
 }

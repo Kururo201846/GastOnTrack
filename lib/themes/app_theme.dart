@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 class AppTheme {
   // Paleta de colores
@@ -38,7 +37,9 @@ class AppTheme {
         onSurfaceVariant: textPrimary,
 
         // Fondo
+        // ignore: deprecated_member_use
         background: lightGray,
+        // ignore: deprecated_member_use
         onBackground: textPrimary,
       ),
 

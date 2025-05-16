@@ -3,86 +3,239 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gast_on_track/models/user_profile.dart';
 import 'package:gast_on_track/themes/app_theme.dart';
+import 'profile_edit_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
   Future<UserProfile?> _fetchUserProfile() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return null;
 
-    final snapshot =
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
 
     if (!snapshot.exists) return null;
 
     return UserProfile.fromMap(snapshot.data()!);
   }
 
+  Future<void> _navigateToEditScreen(BuildContext context, UserProfile profile) async {
+    final updatedProfile = await Navigator.push<UserProfile>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProfileEditScreen(profile: profile),
+      ),
+    );
+
+    if (updatedProfile != null) {
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<UserProfile?>(
-      future: _fetchUserProfile(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    return Scaffold(
+      body: FutureBuilder<UserProfile?>(
+        future: _fetchUserProfile(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-        if (!snapshot.hasData || snapshot.data == null) {
-          return const Center(child: Text("No se pudo cargar el perfil."));
-        }
+          if (!snapshot.hasData || snapshot.data == null) {
+            return const Center(child: Text("No se pudo cargar el perfil."));
+          }
 
-        final profile = snapshot.data!;
-        return Padding(
-          padding: const EdgeInsets.all(20),
-          child: ListView(
-            children: [
-              const SizedBox(height: 20),
-              Icon(Icons.person, size: 100, color: AppTheme.primaryBlue),
-              const SizedBox(height: 20),
-              _buildField('Nombre', profile.firstName),
-              _buildField('Apellido', profile.lastName),
-              _buildField('Correo', profile.email),
-              _buildField('Teléfono', profile.phone),
-              _buildField('País', profile.country),
-              _buildField(
-                'Fecha de registro',
-                profile.createdAt?.toLocal().toString().split(' ').first ?? '-',
-              ),
-            ],
-          ),
-        );
-      },
+          final profile = snapshot.data!;
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                CircleAvatar(
+                  radius: 50,
+                  backgroundColor: AppTheme.primaryBlue,
+                  child: const Icon(
+                    Icons.person,
+                    size: 50,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  profile.firstName,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                TextButton.icon(
+                  icon: Icon(Icons.edit, size: 18, color: const Color.fromARGB(255, 255, 255, 255)),
+                  label: Text(
+                    'Editar perfil',
+                    style: TextStyle(
+                      color: const Color.fromARGB(255, 255, 255, 255),
+                      fontSize: 14,
+                    ),
+                  ),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    backgroundColor: const Color.fromARGB(255, 0, 166, 232),
+                  ),
+                  onPressed: () => _navigateToEditScreen(context, profile),
+                ),
+                const SizedBox(height: 30),
+
+                _buildInfoCard(
+                  icon: Icons.email,
+                  title: 'Email',
+                  value: profile.email,
+                ),
+                const SizedBox(height: 15),
+                _buildInfoCard(
+                  icon: Icons.phone,
+                  title: 'Contacto',
+                  value: profile.phone,
+                ),
+                const SizedBox(height: 15),
+                _buildInfoCard(
+                  icon: Icons.location_on,
+                  title: 'País',
+                  value: profile.country,
+                ),
+                const SizedBox(height: 15),
+                _buildInfoCard(
+                  icon: Icons.savings,
+                  title: 'Total ahorrado',
+                  value: '\$400,000 CLP',
+                  isAmount: true,
+                ),
+                const SizedBox(height: 10),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {},
+                    child: const Text(
+                      'Ver más detalles',
+                      style: TextStyle(
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 30),
+
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Logros',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                _buildAchievementsSection(),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
-  Widget _buildField(String label, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: AppTheme.primaryBlue,
-            fontSize: 16,
+  Widget _buildInfoCard({
+    required IconData icon,
+    required String title,
+    required String value,
+    bool isAmount = false,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: const Color.fromARGB(118, 158, 158, 158),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: const Offset(0, 3),
           ),
-        ),
-        const SizedBox(height: 4),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(color: AppTheme.primaryBlue),
-            borderRadius: BorderRadius.circular(8),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: AppTheme.primaryBlue),
+          const SizedBox(width: 15),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: isAmount ? FontWeight.bold : FontWeight.normal,
+                  color: isAmount ? AppTheme.primaryBlue : Colors.black,
+                ),
+              ),
+            ],
           ),
-          child: Text(value, style: const TextStyle(fontSize: 16)),
-        ),
-        const SizedBox(height: 16),
-      ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAchievementsSection() {
+    return Container(
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey,
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          _buildAchievementItem('Primer ahorro', Icons.emoji_events),
+          _buildAchievementItem('Meta mensual', Icons.star),
+          _buildAchievementItem('Consistencia', Icons.timeline),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAchievementItem(String title, IconData icon) {
+    return ListTile(
+      leading: Icon(icon, color: AppTheme.primaryBlue),
+      title: Text(title),
+      trailing: const Icon(Icons.check_circle, color: Colors.green),
     );
   }
 }
