@@ -66,7 +66,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: const Icon(
                     Icons.person,
                     size: 50,
-                    color: Colors.white,
+                    color: AppTheme.white,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -78,24 +78,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 TextButton.icon(
-                  icon: Icon(Icons.edit, size: 18, color: const Color.fromARGB(255, 255, 255, 255)),
+                  icon: Icon(Icons.edit, size: 16, color: AppTheme.white),
                   label: Text(
                     'Editar perfil',
                     style: TextStyle(
-                      color: const Color.fromARGB(255, 255, 255, 255),
+                      color: AppTheme.white,
                       fontSize: 14,
                     ),
                   ),
                   style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    backgroundColor: const Color.fromARGB(255, 0, 166, 232),
+                    backgroundColor: AppTheme.primaryBlue,
                   ),
                   onPressed: () => _navigateToEditScreen(context, profile),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
 
                 _buildInfoCard(
                   icon: Icons.email,
@@ -165,11 +165,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.white,
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: const Color.fromARGB(118, 158, 158, 158),
+            color: AppTheme.shadows,
             spreadRadius: 2,
             blurRadius: 5,
             offset: const Offset(0, 3),
@@ -186,7 +186,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Text(
                 title,
                 style: TextStyle(
-                  color: Colors.grey[600],
+                  color: AppTheme.textSecondary,
                   fontSize: 14,
                 ),
               ),
@@ -210,11 +210,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.white,
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey,
+            color: AppTheme.shadows,
             spreadRadius: 2,
             blurRadius: 5,
             offset: const Offset(0, 3),
@@ -235,7 +235,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return ListTile(
       leading: Icon(icon, color: AppTheme.primaryBlue),
       title: Text(title),
-      trailing: const Icon(Icons.check_circle, color: Colors.green),
+      trailing: const Icon(Icons.check_circle, color: AppTheme.successGreen),
     );
   }
 }

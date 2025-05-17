@@ -7,11 +7,10 @@ class AppTheme {
   static const Color white = Color(0xFFFFFFFF);
   static const Color cream = Color.fromARGB(255, 255, 255, 255);
   static const Color lightCream = Color.fromARGB(255, 255, 255, 255);
-  static const Color textPrimary = Color(0xFF2E2E2E); // Texto principal
-  static const Color textSecondary = Color(0xFF7D7D7D); // Texto secundario
-  static const Color successGreen = Color(
-    0xFF4BB543,
-  ); // Verde para acciones exitosas
+  static const Color textPrimary = Color(0xFF2E2E2E); 
+  static const Color textSecondary = Color(0xFF7D7D7D);
+  static const Color shadows = Color.fromARGB(149, 177, 177, 177);
+  static const Color successGreen = Color(0xFF4BB543,); 
   static const Color errorRed = Color(0xFFFF4C4C);
 
   static ThemeData get lightTheme {

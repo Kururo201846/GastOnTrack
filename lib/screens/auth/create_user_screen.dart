@@ -20,7 +20,6 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
   final _lastNameController = TextEditingController();
   final _phoneController = TextEditingController();
 
-  // Lista de países en orden alfabético
   final List<String> countries = [
     'Argentina',
     'Brasil',
@@ -115,7 +114,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.white,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -187,14 +186,14 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                     onPressed: _isLoading ? null : _createAccount,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.primaryBlue,
-                      foregroundColor: Colors.white,
+                      foregroundColor: AppTheme.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     child: _isLoading
                         ? const CircularProgressIndicator(
-                            color: Colors.white,
+                            color: AppTheme.white,
                           )
                         : const Text('Crear Cuenta'),
                   ),
@@ -241,7 +240,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
           prefixIcon: Icon(fieldIcons[fieldName], color: AppTheme.primaryBlue),
           border: const UnderlineInputBorder(),
           hintText: hint,
-          hintStyle: TextStyle(color: Colors.grey[600]),
+          hintStyle: TextStyle(color: AppTheme.textSecondary),
         ),
         validator: (value) {
           if (value == null || value.trim().isEmpty) return 'Campo obligatorio';
@@ -265,7 +264,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
           prefixIcon: Icon(fieldIcons['country'], color: AppTheme.primaryBlue),
           border: const UnderlineInputBorder(),
           hintText: 'País',
-          hintStyle: TextStyle(color: Colors.grey[600]),
+          hintStyle: TextStyle(color: AppTheme.textSecondary),
         ),
         items: countries.map((String country) {
           return DropdownMenuItem<String>(
@@ -308,7 +307,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
         ),
         border: const UnderlineInputBorder(),
         hintText: hint,
-        hintStyle: TextStyle(color: Colors.grey[600]),
+        hintStyle: TextStyle(color: AppTheme.textSecondary),
       ),
       validator: (value) {
         if (value == null || value.isEmpty) return 'Campo obligatorio';

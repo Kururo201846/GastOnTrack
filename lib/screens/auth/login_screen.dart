@@ -65,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.white,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -97,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     prefixIcon: Icon(Icons.email, color: AppTheme.primaryBlue),
                     border: const UnderlineInputBorder(),
                     hintText: 'Username',
-                    hintStyle: TextStyle(color: Colors.grey[600]),
+                    hintStyle: TextStyle(color: AppTheme.textSecondary)
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -153,7 +153,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                     child: Text(
                       'Forgot Password?',
-                      style: TextStyle(color: AppTheme.textPrimary),
+                      style: TextStyle(color: AppTheme.textPrimary,
+                        decoration: TextDecoration.underline,
+                        decorationColor: AppTheme.textSecondary,
+                        decorationThickness: 2,
+                      ),
+                      
                     ),
                   ),
                 ),
@@ -165,14 +170,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: _isLoading ? null : _signIn,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.primaryBlue,
-                      foregroundColor: Colors.white,
+                      foregroundColor: AppTheme.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     child: _isLoading
                         ? const CircularProgressIndicator(
-                            color: Colors.white,
+                            color: AppTheme.white,
                           )
                         : const Text('Sign In'),
                   ),
