@@ -5,6 +5,7 @@ import 'package:gast_on_track/screens/roulette/roulette_screen.dart';
 import 'package:gast_on_track/themes/app_theme.dart';
 import 'package:gast_on_track/screens/profile/profile_screen.dart';
 import 'package:gast_on_track/cards/home_cards.dart';
+import 'package:gast_on_track/screens/scanner/scanner_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = [
     const HomeContent(),
     const RouletteScreen(),
-    const PlaceholderWidget(title: 'Escáner'),
+    const ScannerScreen(),
     const ProfileScreen(),
   ];
 
