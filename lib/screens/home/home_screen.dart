@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:gast_on_track/screens/roulette/roulette_screen.dart';
 import 'package:gast_on_track/themes/app_theme.dart';
 import 'package:gast_on_track/screens/profile/profile_screen.dart';
 import 'package:gast_on_track/cards/home_cards.dart';
@@ -18,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _screens = [
     const HomeContent(),
-    const PlaceholderWidget(title: 'Ruleta'),
+    const RouletteScreen(),
     const PlaceholderWidget(title: 'Escáner'),
     const ProfileScreen(),
   ];
