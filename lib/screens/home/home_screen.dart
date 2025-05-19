@@ -6,6 +6,8 @@ import 'package:gast_on_track/themes/app_theme.dart';
 import 'package:gast_on_track/screens/profile/profile_screen.dart';
 import 'package:gast_on_track/cards/home_cards.dart';
 import 'package:gast_on_track/screens/scanner/scanner_screen.dart';
+import 'package:gast_on_track/screens/manual/manual_invoice_screen.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -226,7 +228,12 @@ class _HomeContentState extends State<HomeContent> {
           ActionCard(
             icon: Icons.edit_document,
             title: 'Registrar Boleta Manualmente',
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ManualInvoiceScreen()),
+              );
+            },
           ),
         ],
       ),
