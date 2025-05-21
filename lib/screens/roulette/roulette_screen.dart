@@ -101,15 +101,15 @@ class _RouletteScreenState extends State<RouletteScreen> {
     _spinTimer = Timer(const Duration(milliseconds: 800), () {
       if (!mounted) return;
       
-      final votes = {'SÍ': 0, 'NO': 0};
+      final votes = {'SI': 0, 'NO': 0};
       for (var pos in _finalPositions) {
         votes[_options[pos]] = votes[_options[pos]]! + 1;
       }
       
       setState(() {
-        if (votes['SÍ']! > votes['NO']!) {
-          _result = 'SÍ';
-        } else if (votes['NO']! > votes['SÍ']!) {
+        if (votes['SI']! > votes['NO']!) {
+          _result = 'SI';
+        } else if (votes['NO']! > votes['SI']!) {
           _result = 'NO';
         } else {
           _result = _options[_random.nextInt(2)];
