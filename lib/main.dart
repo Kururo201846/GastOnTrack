@@ -22,7 +22,7 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       title: 'Gast On Track',
       debugShowCheckedModeBanner: false,
-      theme:AppTheme.lightTheme,
+      theme: AppTheme.lightTheme,
       home: const AuthWrapper(),
       routes: {
         '/login': (context) => const LoginScreen(),

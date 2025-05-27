@@ -6,6 +6,7 @@ import 'package:gast_on_track/themes/app_theme.dart';
 import 'package:gast_on_track/screens/profile/profile_screen.dart';
 import 'package:gast_on_track/cards/home_cards.dart';
 import 'package:gast_on_track/screens/scanner/scanner_screen.dart';
+import 'package:gast_on_track/screens/manual/invoice_history_screen.dart';
 import 'package:gast_on_track/screens/manual/manual_invoice_screen.dart';
 
 
@@ -222,7 +223,13 @@ class _HomeContentState extends State<HomeContent> {
           ActionCard(
             icon: Icons.receipt,
             title: 'Historial De Boletas',
-            onPressed: () {},
+            onPressed: () {
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const InvoiceHistoryScreen()),
+              );
+            },
           ),
           const SizedBox(height: 20),
           ActionCard(
