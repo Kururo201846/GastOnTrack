@@ -146,7 +146,9 @@ class _ScannerScreenState extends State<ScannerScreen> {
                         child: SingleChildScrollView(
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
-                            child: Text(_extractedText),
+                            child: _extractedText.isNotEmpty
+            ? _buildStructuredBoleta(_extractedText)
+            : const Text("Escanea una boleta para ver los datos."),
                           ),
                         ),
                       ),
@@ -166,4 +168,71 @@ class _ScannerScreenState extends State<ScannerScreen> {
             : null,
     );
   }
+}
+
+Widget _buildStructuredBoleta(String text) {
+  final words = text
+      .split(RegExp(r'\s+'))
+      .where((w) => w.trim().isNotEmpty)
+      .toList();
+
+  List<List<String>> filas = [];
+  List<String> buffer = [];
+
+  for (int i = 0; i < words.length; i++) {
+    final word = words[i];
+
+    if (word.toUpperCase().contains("TOTAL")) {
+      if (buffer.isNotEmpty) {
+        filas.add(List.from(buffer));
+        buffer.clear();
+      }
+      if (i + 1 < words.length) {
+        filas.add([word, words[i + 1]]);
+        i++;
+      } else {
+        filas.add([word]);
+      }
+    } else {
+      buffer.add(word);
+      if (buffer.length == 3) {
+        filas.add(List.from(buffer));
+        buffer.clear();
+      }
+    }
+  }
+
+  if (buffer.isNotEmpty) {
+    filas.add(List.from(buffer));
+  }
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: filas.map((fila) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: fila.map((item) {
+            return Expanded(
+              flex: 1,
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  item,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      );
+    }).toList(),
+  );
 }
