@@ -14,23 +14,39 @@ class _ManualInvoiceScreenState extends State<ManualInvoiceScreen> {
   final TextEditingController _cantidadController = TextEditingController();
   final TextEditingController _descripcionController = TextEditingController();
   final TextEditingController _precioController = TextEditingController();
+
+  List<Map<String, dynamic>> productos = [];
+  String? categoriaSeleccionada;
   bool _isSubmitting = false;
 
-  void _guardarBoleta() async {
-    if (_isSubmitting) return;
-    setState(() => _isSubmitting = true);
+  final List<String> categorias = ['Comida', 'Tecnología', 'Gastos', 'Otros'];
 
+  void _agregarProducto() {
+    final cantidad = _cantidadController.text.trim();
+    final descripcion = _descripcionController.text.trim();
+    final precio = _precioController.text.trim();
+
+    if (cantidad.isEmpty || descripcion.isEmpty || precio.isEmpty) return;
+
+    setState(() {
+      productos.add({
+        'cantidad': cantidad,
+        'descripcion': descripcion,
+        'precio': precio,
+      });
+      _cantidadController.clear();
+      _descripcionController.clear();
+      _precioController.clear();
+    });
+  }
+
+  void _guardarBoleta() async {
+    if (_isSubmitting || productos.isEmpty || categoriaSeleccionada == null)
+      return;
+
+    setState(() => _isSubmitting = true);
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      setState(() => _isSubmitting = false);
-      return;
-    }
-
-    final String cantidad = _cantidadController.text.trim();
-    final String descripcion = _descripcionController.text.trim();
-    final String precio = _precioController.text.trim();
-
-    if (cantidad.isEmpty || descripcion.isEmpty || precio.isEmpty) {
       setState(() => _isSubmitting = false);
       return;
     }
@@ -38,9 +54,8 @@ class _ManualInvoiceScreenState extends State<ManualInvoiceScreen> {
     try {
       await FirebaseFirestore.instance.collection('boletas').add({
         'uid': user.uid,
-        'cantidad': cantidad,
-        'descripcion': descripcion,
-        'precio': precio,
+        'productos': productos,
+        'categoria': categoriaSeleccionada,
         'fecha': Timestamp.now(),
       });
 
@@ -50,9 +65,10 @@ class _ManualInvoiceScreenState extends State<ManualInvoiceScreen> {
         const SnackBar(content: Text('Boleta registrada con éxito')),
       );
 
-      _cantidadController.clear();
-      _descripcionController.clear();
-      _precioController.clear();
+      setState(() {
+        productos.clear();
+        categoriaSeleccionada = null;
+      });
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -78,9 +94,24 @@ class _ManualInvoiceScreenState extends State<ManualInvoiceScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: ListView(
           children: [
+            DropdownButtonFormField<String>(
+              decoration: const InputDecoration(
+                labelText: 'Categoría',
+                border: OutlineInputBorder(),
+              ),
+              value: categoriaSeleccionada,
+              onChanged:
+                  (value) => setState(() => categoriaSeleccionada = value),
+              items:
+                  categorias
+                      .map(
+                        (cat) => DropdownMenuItem(value: cat, child: Text(cat)),
+                      )
+                      .toList(),
+            ),
+            const SizedBox(height: 20),
             TextField(
               controller: _cantidadController,
               decoration: const InputDecoration(
@@ -92,7 +123,7 @@ class _ManualInvoiceScreenState extends State<ManualInvoiceScreen> {
             TextField(
               controller: _descripcionController,
               decoration: const InputDecoration(
-                labelText: 'Descripcion',
+                labelText: 'Descripción',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -105,7 +136,19 @@ class _ManualInvoiceScreenState extends State<ManualInvoiceScreen> {
               ),
               keyboardType: TextInputType.number,
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _agregarProducto,
+              child: const Text('Agregar producto'),
+            ),
+            const SizedBox(height: 10),
+            ...productos.map(
+              (p) => ListTile(
+                title: Text('${p['descripcion']} x${p['cantidad']}'),
+                subtitle: Text('Precio: \$${p['precio']}'),
+              ),
+            ),
+            const SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.primaryBlue,
@@ -113,7 +156,7 @@ class _ManualInvoiceScreenState extends State<ManualInvoiceScreen> {
               ),
               onPressed: _isSubmitting ? null : _guardarBoleta,
               child: const Text(
-                'Agregar',
+                'Guardar boleta',
                 style: TextStyle(color: Colors.white),
               ),
             ),

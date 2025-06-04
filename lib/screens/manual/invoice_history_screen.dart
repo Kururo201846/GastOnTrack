@@ -42,13 +42,19 @@ class InvoiceHistoryScreen extends StatelessWidget {
           final data = snapshot.data ?? [];
           double total = 0.0;
 
-          for (var item in data) {
-            final precio =
-                double.tryParse(
-                  item['precio'].toString().replaceAll(RegExp(r'[^0-9.]'), ''),
-                ) ??
-                0.0;
-            total += precio;
+          for (var boleta in data) {
+            final productos = boleta['productos'] as List<dynamic>? ?? [];
+            for (var producto in productos) {
+              final precio =
+                  double.tryParse(
+                    producto['precio'].toString().replaceAll(
+                      RegExp(r'[^0-9.]'),
+                      '',
+                    ),
+                  ) ??
+                  0.0;
+              total += precio;
+            }
           }
 
           return Padding(
@@ -60,87 +66,105 @@ class InvoiceHistoryScreen extends StatelessWidget {
                 color: AppTheme.primaryBlue.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(30),
               ),
-              child: Stack(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 80),
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 80),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        const Center(
-                          child: Text(
-                            'Datos de Boleta\nObtenidos',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: const [
-                            Expanded(
-                              child: Text(
-                                'Cantidad',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                'Descripcion',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                'Precio',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Divider(thickness: 1.5),
-                        const SizedBox(height: 8),
-                        ...data.map((item) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Text(item['cantidad'].toString()),
-                                ),
-                                Expanded(
-                                  child: Text(item['descripcion'].toString()),
-                                ),
-                                Expanded(child: Text('\$${item['precio']}')),
-                              ],
-                            ),
-                          );
-                        }).toList(),
-                      ],
+                  const Center(
+                    child: Text(
+                      'Datos de Boleta\nObtenidos',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
-                  Positioned(
-                    bottom: 20,
-                    right: 20,
-                    left: 20,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        const Divider(thickness: 1.5),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Total\n\$${total.toStringAsFixed(0)}',
+                  const SizedBox(height: 20),
+                  ...data.map((boleta) {
+                    final categoria = boleta['categoria'] ?? 'Sin categoría';
+                    final productos =
+                        boleta['productos'] as List<dynamic>? ?? [];
+
+                    return Card(
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ExpansionTile(
+                        tilePadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        childrenPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        title: Text(
+                          'Categoría: $categoria',
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),
-                          textAlign: TextAlign.right,
                         ),
-                      ],
+                        children: [
+                          const Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  'Cantidad',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  'Descripción',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  'Precio',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Divider(thickness: 1.5),
+                          ...productos.map((item) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 6.0,
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(item['cantidad'].toString()),
+                                  ),
+                                  Expanded(
+                                    child: Text(item['descripcion'].toString()),
+                                  ),
+                                  Expanded(child: Text('\$${item['precio']}')),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                  const Divider(thickness: 1.5),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      'Total\n\$${total.toStringAsFixed(0)}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                      textAlign: TextAlign.right,
                     ),
                   ),
                 ],

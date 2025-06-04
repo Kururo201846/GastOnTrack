@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gast_on_track/models/user_profile.dart';
 import 'package:gast_on_track/themes/app_theme.dart';
 import 'profile_edit_screen.dart';
+import 'graph_screen.dart'; // <-- Importación añadida
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -17,17 +18,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return null;
 
-    final snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .get();
+    final snapshot =
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
 
     if (!snapshot.exists) return null;
 
     return UserProfile.fromMap(snapshot.data()!);
   }
 
-  Future<void> _navigateToEditScreen(BuildContext context, UserProfile profile) async {
+  Future<void> _navigateToEditScreen(
+    BuildContext context,
+    UserProfile profile,
+  ) async {
     final updatedProfile = await Navigator.push<UserProfile>(
       context,
       MaterialPageRoute(
@@ -81,13 +86,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   icon: Icon(Icons.edit, size: 16, color: AppTheme.white),
                   label: Text(
                     'Editar perfil',
-                    style: TextStyle(
-                      color: AppTheme.white,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: AppTheme.white, fontSize: 14),
                   ),
                   style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 2,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -95,6 +100,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   onPressed: () => _navigateToEditScreen(context, profile),
                 ),
+                const SizedBox(height: 20),
+
+                // BOTÓN DE GRÁFICAS
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.bar_chart, color: AppTheme.white),
+                  label: const Text(
+                    'Gráficas',
+                    style: TextStyle(color: AppTheme.white),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryBlue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const GraphScreen(),
+                      ),
+                    );
+                  },
+                ),
+
                 const SizedBox(height: 20),
 
                 _buildInfoCard(
@@ -128,22 +162,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     onPressed: () {},
                     child: const Text(
                       'Ver más detalles',
-                      style: TextStyle(
-                        decoration: TextDecoration.underline,
-                      ),
+                      style: TextStyle(decoration: TextDecoration.underline),
                     ),
                   ),
                 ),
                 const SizedBox(height: 30),
-
                 const Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Logros',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -185,10 +213,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               Text(
                 title,
-                style: TextStyle(
-                  color: AppTheme.textSecondary,
-                  fontSize: 14,
-                ),
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
               ),
               const SizedBox(height: 5),
               Text(

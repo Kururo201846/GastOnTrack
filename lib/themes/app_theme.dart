@@ -12,6 +12,8 @@ class AppTheme {
   static const Color shadows = Color.fromARGB(149, 177, 177, 177);
   static const Color successGreen = Color(0xFF4BB543,); 
   static const Color errorRed = Color(0xFFFF4C4C);
+  static const Color darkGreen = Color(0xFF388E3C);
+  static const Color accentGreen = Color(0xFF8BC34A);
 
   static ThemeData get lightTheme {
     return ThemeData(
