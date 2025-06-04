@@ -5,6 +5,7 @@ import 'package:gast_on_track/firebaseoption/firebase_options.dart';
 import 'package:gast_on_track/screens/auth/login_screen.dart';
 import 'package:gast_on_track/screens/auth/create_user_screen.dart';
 import 'package:gast_on_track/screens/auth/recover_password_screen.dart';
+import 'package:gast_on_track/screens/history/history_screen.dart';
 import 'package:gast_on_track/screens/home/home_screen.dart';
 import 'package:gast_on_track/themes/app_theme.dart';
 
@@ -29,6 +30,7 @@ class MainApp extends StatelessWidget {
         '/recover_password': (context) => const RecoverPasswordScreen(),
         '/signup': (context) => const CreateUserScreen(),
         '/home': (context) => const HomeScreen(),
+        '/history': (context) => const HistoryScreen(),
       },
     );
   }

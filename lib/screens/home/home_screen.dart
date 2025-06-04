@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:gast_on_track/screens/history/history_screen.dart';
 import 'package:gast_on_track/screens/roulette/roulette_screen.dart';
 import 'package:gast_on_track/themes/app_theme.dart';
 import 'package:gast_on_track/screens/profile/profile_screen.dart';
@@ -216,7 +217,15 @@ class _HomeContentState extends State<HomeContent> {
                 ),
           
           const SizedBox(height: 30),
-          const TotalExpensesCard(amount: 100000),
+          TotalExpensesCard(
+            amount: 100000, 
+            onHistoryPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const HistoryScreen()),
+              );
+            },
+          ),
           const SizedBox(height: 20),
           const CategoriesCard(),
           const SizedBox(height: 20),
