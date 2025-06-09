@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:gast_on_track/themes/app_theme.dart';
+import 'dart:math';
 
 class GraphScreen extends StatefulWidget {
   const GraphScreen({super.key});
@@ -14,11 +17,17 @@ class GraphScreen extends StatefulWidget {
 class _GraphScreenState extends State<GraphScreen> {
   Map<String, double> gastosPorCategoria = {};
   bool isLoading = true;
+  String mesActual = '';
 
   @override
   void initState() {
     super.initState();
-    _cargarDatos();
+    initializeDateFormatting('es_CL', null).then((_) {
+      setState(() {
+        mesActual = DateFormat('MMMM', 'es_CL').format(DateTime.now());
+      });
+      _cargarDatos();
+    });
   }
 
   Future<void> _cargarDatos() async {
@@ -32,11 +41,15 @@ class _GraphScreenState extends State<GraphScreen> {
             .get();
 
     final data = query.docs.map((doc) => doc.data()).toList();
-
     final Map<String, double> acumulado = {};
 
     for (var boleta in data) {
-      final categoriaOriginal = boleta['categoria'] ?? 'Otros';
+      final fecha = (boleta['fecha'] as Timestamp?)?.toDate();
+      if (fecha == null ||
+          DateFormat('MMMM', 'es_CL').format(fecha) != mesActual)
+        continue;
+
+      final categoriaOriginal = boleta['categoria'] ?? 'otros';
       final categoria = _normalizarTexto(categoriaOriginal);
       final productos = boleta['productos'] as List<dynamic>? ?? [];
 
@@ -52,23 +65,22 @@ class _GraphScreenState extends State<GraphScreen> {
     });
   }
 
-  List<BarChartGroupData> _buildBarGroups() {
-    final keys = gastosPorCategoria.keys.toList();
-    return List.generate(keys.length, (index) {
-      final cat = keys[index];
-      final value = gastosPorCategoria[cat]!;
-      return BarChartGroupData(
-        x: index,
-        barRods: [
-          BarChartRodData(
-            toY: value,
-            color: _getColorForCategory(cat),
-            width: 20,
-            borderRadius: BorderRadius.circular(4),
-          ),
-        ],
+  List<PieChartSectionData> _buildPieSections() {
+    final total = gastosPorCategoria.values.fold(0.0, (a, b) => a + b);
+    return gastosPorCategoria.entries.map((entry) {
+      final porcentaje = (entry.value / total) * 100;
+      return PieChartSectionData(
+        value: entry.value,
+        title: '${porcentaje.toStringAsFixed(1)}%',
+        color: _getColorForCategory(entry.key),
+        radius: porcentaje > 90 ? 110 : 90,
+        titleStyle: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
       );
-    });
+    }).toList();
   }
 
   Color _getColorForCategory(String category) {
@@ -101,9 +113,10 @@ class _GraphScreenState extends State<GraphScreen> {
     return Scaffold(
       backgroundColor: AppTheme.cream,
       appBar: AppBar(
-        title: const Text('Gráficas por Categoría'),
-        backgroundColor: AppTheme.white,
-        iconTheme: const IconThemeData(color: Colors.black),
+        title: Text('Gastos de ${toBeginningOfSentenceCase(mesActual)}'),
+        backgroundColor: AppTheme.primaryBlue,
+        iconTheme: const IconThemeData(color: Colors.white),
+        foregroundColor: Colors.white,
       ),
       body:
           isLoading
@@ -111,43 +124,83 @@ class _GraphScreenState extends State<GraphScreen> {
               : Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Total de Gastos por Categoría',
-                      style: TextStyle(
-                        fontSize: 18,
+                    Text(
+                      'Resumen mensual - ${toBeginningOfSentenceCase(mesActual)}',
+                      style: const TextStyle(
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: PieChart(
+                        PieChartData(
+                          sections: _buildPieSections(),
+                          centerSpaceRadius: 50,
+                          sectionsSpace: 4,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 30),
-                    Expanded(
-                      child: BarChart(
-                        BarChartData(
-                          alignment: BarChartAlignment.spaceAround,
-                          barGroups: _buildBarGroups(),
-                          titlesData: FlTitlesData(
-                            leftTitles: AxisTitles(
-                              sideTitles: SideTitles(showTitles: true),
-                            ),
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                getTitlesWidget: (value, meta) {
-                                  final index = value.toInt();
-                                  if (index < gastosPorCategoria.length) {
-                                    return Text(
-                                      gastosPorCategoria.keys.elementAt(index),
-                                      style: const TextStyle(fontSize: 12),
-                                    );
-                                  }
-                                  return const Text('');
-                                },
+                    Column(
+                      children:
+                          gastosPorCategoria.entries.map((entry) {
+                            final total = gastosPorCategoria.values.fold(
+                              0.0,
+                              (a, b) => a + b,
+                            );
+                            final porcentaje = (entry.value / total) * 100;
+                            return Container(
+                              margin: const EdgeInsets.symmetric(vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
                               ),
-                            ),
-                          ),
-                          borderData: FlBorderData(show: false),
-                        ),
-                      ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 12,
+                                    height: 12,
+                                    margin: const EdgeInsets.only(right: 10),
+                                    decoration: BoxDecoration(
+                                      color: _getColorForCategory(entry.key),
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      entry.key,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  Text('${porcentaje.toStringAsFixed(2)} %'),
+                                  const SizedBox(width: 16),
+                                  Text(
+                                    '${entry.value.toInt().toString().replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => '.')} CLP',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
                     ),
                   ],
                 ),

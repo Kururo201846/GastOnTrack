@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gast_on_track/themes/app_theme.dart';
+import 'package:intl/intl.dart';
 
 class ManualInvoiceScreen extends StatefulWidget {
   const ManualInvoiceScreen({super.key});
@@ -82,6 +83,8 @@ class _ManualInvoiceScreenState extends State<ManualInvoiceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final formatter = NumberFormat.currency(locale: 'es_CL', symbol: '\$');
+
     return Scaffold(
       backgroundColor: AppTheme.cream,
       appBar: AppBar(
@@ -142,12 +145,15 @@ class _ManualInvoiceScreenState extends State<ManualInvoiceScreen> {
               child: const Text('Agregar producto'),
             ),
             const SizedBox(height: 10),
-            ...productos.map(
-              (p) => ListTile(
+            ...productos.map((p) {
+              final precioFormateado = formatter.format(
+                double.tryParse(p['precio'].toString()) ?? 0,
+              );
+              return ListTile(
                 title: Text('${p['descripcion']} x${p['cantidad']}'),
-                subtitle: Text('Precio: \$${p['precio']}'),
-              ),
-            ),
+                subtitle: Text('Precio: $precioFormateado CLP'),
+              );
+            }),
             const SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(

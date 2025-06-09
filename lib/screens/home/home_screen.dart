@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 import 'package:gast_on_track/screens/history/history_screen.dart';
 import 'package:gast_on_track/screens/roulette/roulette_screen.dart';
 import 'package:gast_on_track/themes/app_theme.dart';
@@ -9,7 +10,6 @@ import 'package:gast_on_track/cards/home_cards.dart';
 import 'package:gast_on_track/screens/scanner/scanner_screen.dart';
 import 'package:gast_on_track/screens/manual/invoice_history_screen.dart';
 import 'package:gast_on_track/screens/manual/manual_invoice_screen.dart';
-
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -125,8 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (value == 'logout') {
         FirebaseAuth.instance.signOut();
       } else if (value == 'settings') {
-      } else if (value == 'password') {
-      }
+      } else if (value == 'password') {}
     });
   }
 
@@ -169,29 +168,30 @@ class _HomeContentState extends State<HomeContent> {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        final doc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
-        
+        final doc =
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .get();
+
         if (doc.exists) {
           final firstName = doc.data()?['firstName'] ?? 'Usuario';
           setState(() {
             userName = firstName;
-            _isLoading = false;
           });
-          return;
         }
       }
-      setState(() => _isLoading = false);
     } catch (e) {
-      setState(() => _isLoading = false);
       debugPrint('Usuario');
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final formatter = NumberFormat.currency(locale: 'es_CL', symbol: '\$');
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(15),
       child: Column(
@@ -209,20 +209,42 @@ class _HomeContentState extends State<HomeContent> {
           _isLoading
               ? const CircularProgressIndicator()
               : Text(
-                  userName,
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: AppTheme.textPrimary,
-                  ),
-                ),
-          
+                userName,
+                style: TextStyle(fontSize: 20, color: AppTheme.textPrimary),
+              ),
           const SizedBox(height: 30),
-          TotalExpensesCard(
-            amount: 100000, 
-            onHistoryPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const HistoryScreen()),
+          StreamBuilder<QuerySnapshot>(
+            stream:
+                FirebaseFirestore.instance
+                    .collection('boletas')
+                    .where(
+                      'uid',
+                      isEqualTo: FirebaseAuth.instance.currentUser?.uid,
+                    )
+                    .snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return const CircularProgressIndicator();
+              }
+
+              double total = 0;
+              for (var doc in snapshot.data!.docs) {
+                final productos = doc['productos'] as List<dynamic>? ?? [];
+                for (var p in productos) {
+                  total += double.tryParse(p['precio'].toString()) ?? 0;
+                }
+              }
+
+              return TotalExpensesCard(
+                amount: total,
+                onHistoryPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HistoryScreen(),
+                    ),
+                  );
+                },
               );
             },
           ),
@@ -233,10 +255,11 @@ class _HomeContentState extends State<HomeContent> {
             icon: Icons.receipt,
             title: 'Historial De Boletas',
             onPressed: () {
-
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const InvoiceHistoryScreen()),
+                MaterialPageRoute(
+                  builder: (context) => const InvoiceHistoryScreen(),
+                ),
               );
             },
           ),
@@ -247,39 +270,11 @@ class _HomeContentState extends State<HomeContent> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ManualInvoiceScreen()),
+                MaterialPageRoute(
+                  builder: (context) => const ManualInvoiceScreen(),
+                ),
               );
             },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class PlaceholderWidget extends StatelessWidget {
-  final String title;
-
-  const PlaceholderWidget({super.key, required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 24,
-              color: AppTheme.primaryBlue,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            'Contenido en desarrollo',
-            style: TextStyle(color: AppTheme.textSecondary),
           ),
         ],
       ),
