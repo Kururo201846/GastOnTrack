@@ -17,8 +17,10 @@ dependencies:
   photo_manager: ^3.6.0
   camera: ^0.11.1
   image_picker: ^1.1.2
-  fl_chart: ^0.64.0
+  fl_chart: ^0.66.0
   intl: ^0.18.1
+  firebase_storage: ^12.4.6
+  firebase_messaging: ^15.2.2
 
 dev_dependencies:
   flutter_test:

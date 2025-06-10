@@ -10,6 +10,8 @@ import 'package:gast_on_track/cards/home_cards.dart';
 import 'package:gast_on_track/screens/scanner/scanner_screen.dart';
 import 'package:gast_on_track/screens/manual/invoice_history_screen.dart';
 import 'package:gast_on_track/screens/manual/manual_invoice_screen.dart';
+import 'package:gast_on_track/screens/notifications/notification_screen.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -28,6 +30,29 @@ class _HomeScreenState extends State<HomeScreen> {
     const ScannerScreen(),
     const ProfileScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _initNotifications();
+  }
+
+  void _initNotifications() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    String? token = await FirebaseMessaging.instance.getToken();
+    print('FCM Token: $token');
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      if (message.notification != null) {
+        final notification = message.notification!;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${notification.title ?? ''}\n${notification.body ?? ''}'),
+          ),
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +83,14 @@ class _HomeScreenState extends State<HomeScreen> {
       actions: [
         IconButton(
           icon: Icon(Icons.notifications, color: AppTheme.primaryBlue),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const NotificationScreen(),
+              ),
+            );
+          },
         ),
       ],
     );
@@ -125,7 +157,15 @@ class _HomeScreenState extends State<HomeScreen> {
       if (value == 'logout') {
         FirebaseAuth.instance.signOut();
       } else if (value == 'settings') {
-      } else if (value == 'password') {}
+      } else if (value == 'password') {
+      } else if (value == 'notifications') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const NotificationScreen(),
+          ),
+        );
+      }
     });
   }
 
@@ -188,6 +228,46 @@ class _HomeContentState extends State<HomeContent> {
     }
   }
 
+  Future<Map<String, double>> _getGastosPorCategoriaDelMes() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return {};
+
+      final now = DateTime.now();
+      final primerDiaMes = DateTime(now.year, now.month, 1);
+
+      final query = await FirebaseFirestore.instance
+          .collection('boletas')
+          .where('uid', isEqualTo: user.uid)
+          .where('fecha', isGreaterThanOrEqualTo: primerDiaMes)
+          .get();
+
+      final Map<String, double> acumulado = {};
+
+      for (var doc in query.docs) {
+        final data = doc.data();
+        final categoria = _normalizarCategoria(data['categoria'] ?? 'otros');
+        final productos = (data['productos'] is List)
+            ? data['productos'] as List
+            : [];
+
+        for (var p in productos) {
+          if (p is Map && p.containsKey('precio')) {
+            final precio = double.tryParse(p['precio'].toString()) ?? 0.0;
+            if (precio > 0) {
+              acumulado[categoria] = (acumulado[categoria] ?? 0) + precio;
+            }
+          }
+        }
+      }
+      return acumulado;
+    } catch (e, st) {
+      print('Error al obtener gastos por categoría: $e');
+      print(st);
+      return {};
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final formatter = NumberFormat.currency(locale: 'es_CL', symbol: '\$');
@@ -229,7 +309,10 @@ class _HomeContentState extends State<HomeContent> {
 
               double total = 0;
               for (var doc in snapshot.data!.docs) {
-                final productos = doc['productos'] as List<dynamic>? ?? [];
+                final data = doc.data() as Map<String, dynamic>;
+                final productos = data.containsKey('productos') && data['productos'] is List
+                    ? data['productos'] as List<dynamic>
+                    : [];
                 for (var p in productos) {
                   total += double.tryParse(p['precio'].toString()) ?? 0;
                 }
@@ -249,7 +332,28 @@ class _HomeContentState extends State<HomeContent> {
             },
           ),
           const SizedBox(height: 20),
-          const CategoriesCard(),
+          FutureBuilder<Map<String, double>>(
+            future: _getGastosPorCategoriaDelMes(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              }
+              if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              }
+              final gastos = snapshot.data ?? {};
+              if (gastos.isEmpty) {
+                return CategoriesCard(
+                  gastosPorCategoria: {},
+                  totalMes: 0,
+                );
+              }
+              return CategoriesCard(
+                gastosPorCategoria: gastos,
+                totalMes: gastos.values.fold(0.0, (a, b) => a + b),
+              );
+            },
+          ),
           const SizedBox(height: 20),
           ActionCard(
             icon: Icons.receipt,
@@ -281,3 +385,15 @@ class _HomeContentState extends State<HomeContent> {
     );
   }
 }
+
+String _normalizarCategoria(String cat) {
+  return cat
+      .toLowerCase()
+      .replaceAll('á', 'a')
+      .replaceAll('é', 'e')
+      .replaceAll('í', 'i')
+      .replaceAll('ó', 'o')
+      .replaceAll('ú', 'u')
+      .trim();
+}
+

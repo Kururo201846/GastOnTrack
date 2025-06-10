@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -84,6 +85,8 @@ class InvoiceHistoryScreen extends StatelessWidget {
                     final categoria = boleta['categoria'] ?? 'Sin categoría';
                     final productos =
                         boleta['productos'] as List<dynamic>? ?? [];
+                    final imagenUrl = boleta['imagenUrl'] as String?;
+                    final imagenBase64 = boleta['imagenBase64'] as String?;
 
                     return Card(
                       color: Colors.white,
@@ -107,6 +110,19 @@ class InvoiceHistoryScreen extends StatelessWidget {
                           ),
                         ),
                         children: [
+                          if (imagenUrl != null)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 12.0),
+                              child: Image.network(imagenUrl, height: 120),
+                            ),
+                          if (imagenBase64 != null)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 12.0),
+                              child: Image.memory(
+                                base64Decode(imagenBase64),
+                                height: 120,
+                              ),
+                            ),
                           const Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [

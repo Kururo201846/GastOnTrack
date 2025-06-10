@@ -1,8 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gast_on_track/themes/app_theme.dart';
 import 'package:intl/intl.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class ManualInvoiceScreen extends StatefulWidget {
   const ManualInvoiceScreen({super.key});
@@ -19,6 +23,8 @@ class _ManualInvoiceScreenState extends State<ManualInvoiceScreen> {
   List<Map<String, dynamic>> productos = [];
   String? categoriaSeleccionada;
   bool _isSubmitting = false;
+  File? _selectedImage;
+  final ImagePicker _picker = ImagePicker();
 
   final List<String> categorias = ['Comida', 'Tecnología', 'Gastos', 'Otros'];
 
@@ -52,12 +58,19 @@ class _ManualInvoiceScreenState extends State<ManualInvoiceScreen> {
       return;
     }
 
+    String? imageBase64;
     try {
+      if (_selectedImage != null) {
+        final bytes = await _selectedImage!.readAsBytes();
+        imageBase64 = base64Encode(bytes);
+      }
+
       await FirebaseFirestore.instance.collection('boletas').add({
         'uid': user.uid,
         'productos': productos,
         'categoria': categoriaSeleccionada,
         'fecha': Timestamp.now(),
+        'imagenBase64': imageBase64,
       });
 
       if (!mounted) return;
@@ -69,6 +82,7 @@ class _ManualInvoiceScreenState extends State<ManualInvoiceScreen> {
       setState(() {
         productos.clear();
         categoriaSeleccionada = null;
+        _selectedImage = null;
       });
     } catch (e) {
       if (mounted) {
@@ -78,6 +92,15 @@ class _ManualInvoiceScreenState extends State<ManualInvoiceScreen> {
       }
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
     }
   }
 
@@ -95,91 +118,99 @@ class _ManualInvoiceScreenState extends State<ManualInvoiceScreen> {
           style: TextStyle(color: AppTheme.primaryBlue),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: ListView(
-          children: [
-            DropdownButtonFormField<String>(
-              decoration: const InputDecoration(
-                labelText: 'Categoría',
-                border: OutlineInputBorder(),
-              ),
-              value: categoriaSeleccionada,
-              onChanged:
-                  (value) => setState(() => categoriaSeleccionada = value),
-              items:
-                  categorias
-                      .map(
-                        (cat) => DropdownMenuItem(value: cat, child: Text(cat)),
-                      )
-                      .toList(),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          DropdownButtonFormField<String>(
+            decoration: const InputDecoration(
+              labelText: 'Categoría',
+              border: OutlineInputBorder(),
             ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _cantidadController,
-              decoration: const InputDecoration(
-                labelText: 'Cantidad',
-                border: OutlineInputBorder(),
-              ),
+            value: categoriaSeleccionada,
+            onChanged:
+                (value) => setState(() => categoriaSeleccionada = value),
+            items: categorias
+                .map(
+                  (cat) => DropdownMenuItem(value: cat, child: Text(cat)),
+                )
+                .toList(),
+          ),
+          const SizedBox(height: 20),
+          TextField(
+            controller: _cantidadController,
+            decoration: const InputDecoration(
+              labelText: 'Cantidad',
+              border: OutlineInputBorder(),
             ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _descripcionController,
-              decoration: const InputDecoration(
-                labelText: 'Descripción',
-                border: OutlineInputBorder(),
-              ),
+            keyboardType: TextInputType.number,
+          ),
+          const SizedBox(height: 20),
+          TextField(
+            controller: _descripcionController,
+            decoration: const InputDecoration(
+              labelText: 'Descripción',
+              border: OutlineInputBorder(),
             ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _precioController,
-              decoration: const InputDecoration(
-                labelText: 'Precio',
-                border: OutlineInputBorder(),
-              ),
-              keyboardType: TextInputType.number,
+          ),
+          const SizedBox(height: 20),
+          TextField(
+            controller: _precioController,
+            decoration: const InputDecoration(
+              labelText: 'Precio',
+              border: OutlineInputBorder(),
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _agregarProducto,
-              child: const Text('Agregar producto'),
+            keyboardType: TextInputType.number,
+          ),
+          const SizedBox(height: 20),
+          Text('Imagen de la boleta:', style: TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 10),
+          if (_selectedImage != null)
+            Image.file(_selectedImage!, height: 120),
+          ElevatedButton.icon(
+            onPressed: _pickImage,
+            icon: const Icon(Icons.image),
+            label: const Text('Seleccionar imagen'),
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: _agregarProducto,
+            child: const Text('Agregar producto'),
+          ),
+          const SizedBox(height: 20),
+          ...productos.map((p) {
+            final precioFormateado = formatter.format(
+              double.tryParse(p['precio'].toString()) ?? 0,
+            );
+            return ListTile(
+              title: Text('${p['descripcion']} x${p['cantidad']}'),
+              subtitle: Text('Precio: $precioFormateado CLP'),
+            );
+          }),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryBlue,
+              padding: const EdgeInsets.symmetric(vertical: 14),
             ),
-            const SizedBox(height: 10),
-            ...productos.map((p) {
-              final precioFormateado = formatter.format(
-                double.tryParse(p['precio'].toString()) ?? 0,
-              );
-              return ListTile(
-                title: Text('${p['descripcion']} x${p['cantidad']}'),
-                subtitle: Text('Precio: $precioFormateado CLP'),
-              );
-            }),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryBlue,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-              ),
-              onPressed: _isSubmitting ? null : _guardarBoleta,
-              child: const Text(
-                'Guardar boleta',
-                style: TextStyle(color: Colors.white),
-              ),
+            onPressed: _isSubmitting ? null : _guardarBoleta,
+            child: const Text(
+              'Guardar boleta',
+              style: TextStyle(color: Colors.white),
             ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-              ),
-              onPressed: () => Navigator.pop(context),
-              child: const Text(
-                'Cancelar',
-                style: TextStyle(color: Colors.white),
-              ),
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black,
+              padding: const EdgeInsets.symmetric(vertical: 14),
             ),
-          ],
-        ),
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
       ),
     );
   }

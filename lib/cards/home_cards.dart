@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gast_on_track/themes/app_theme.dart';
+import 'package:gast_on_track/widgets/mini_pie_chart.dart';
 
 BoxDecoration _boxDecoration() {
   return BoxDecoration(
@@ -84,37 +85,85 @@ class TotalExpensesCard extends StatelessWidget {
 }
 
 class CategoriesCard extends StatelessWidget {
-  final VoidCallback? onPressed;
+  final Map<String, double> gastosPorCategoria;
+  final double totalMes;
 
   const CategoriesCard({
     super.key,
-    this.onPressed,
+    required this.gastosPorCategoria,
+    required this.totalMes,
   });
+
+  Color _getColorForCategory(String category) {
+    switch (category) {
+      case 'comida':
+        return Colors.green;
+      case 'tecnologia':
+        return Colors.blue;
+      case 'gastos':
+        return Colors.orange;
+      case 'otros':
+        return Colors.grey;
+      default:
+        return Colors.grey.shade400;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final categorias = gastosPorCategoria.keys.toList();
     return Container(
       width: double.infinity,
-      height: 280,
       decoration: _boxDecoration(),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: onPressed,
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                'Categorías',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: AppTheme.textPrimary,
-                  fontWeight: FontWeight.w500,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Text(
+              'Categorías',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black87,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Center(
+              child: SizedBox(
+                height: 140,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  shrinkWrap: true,
+                  itemCount: categorias.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 24),
+                  itemBuilder: (context, index) {
+                    final cat = categorias[index];
+                    final porcentaje = totalMes > 0
+                        ? (gastosPorCategoria[cat]! / totalMes) * 100
+                        : 0.0;
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        MiniPieChart(
+                          porcentaje: porcentaje,
+                          colorPrincipal: _getColorForCategory(cat),
+                          colorSecundario: Colors.grey[300]!,
+                          label: cat,
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          '${cat[0].toUpperCase()}${cat.substring(1)}',
+                          style: const TextStyle(fontSize: 13),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

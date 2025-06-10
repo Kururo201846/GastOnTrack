@@ -8,10 +8,18 @@ import 'package:gast_on_track/screens/auth/recover_password_screen.dart';
 import 'package:gast_on_track/screens/history/history_screen.dart';
 import 'package:gast_on_track/screens/home/home_screen.dart';
 import 'package:gast_on_track/themes/app_theme.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
   runApp(const MainApp());
 }
 
