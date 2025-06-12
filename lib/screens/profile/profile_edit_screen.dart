@@ -6,7 +6,7 @@ import 'package:gast_on_track/themes/app_theme.dart';
 
 class ProfileEditScreen extends StatefulWidget {
   final UserProfile profile;
-  
+
   const ProfileEditScreen({super.key, required this.profile});
 
   @override
@@ -25,13 +25,15 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     'Brasil',
     'Chile',
     'Colombia',
-    'México'
+    'México',
   ];
 
   @override
   void initState() {
     super.initState();
-    _firstNameController = TextEditingController(text: widget.profile.firstName);
+    _firstNameController = TextEditingController(
+      text: widget.profile.firstName,
+    );
     _lastNameController = TextEditingController(text: widget.profile.lastName);
     _phoneController = TextEditingController(text: widget.profile.phone);
     _selectedCountry = widget.profile.country;
@@ -48,7 +50,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     }
 
     setState(() => _isSaving = true);
-    
+
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) return;
@@ -70,7 +72,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 
       if (!mounted) return;
       Navigator.pop(context, updatedProfile);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -99,8 +101,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Editar Perfil',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Editar Perfil',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
         elevation: 0,
         backgroundColor: AppTheme.primaryBlue,
@@ -109,9 +113,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: IconButton(
-              icon: _isSaving
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : const Icon(Icons.check, size: 28),
+              icon:
+                  _isSaving
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Icon(Icons.check, size: 28),
               onPressed: _isSaving ? null : _saveProfile,
             ),
           ),
@@ -120,23 +125,23 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
-          children: [         
+          children: [
             const SizedBox(height: 30),
-            
+
             _buildEditField(
               label: 'Nombre',
               icon: Icons.person_outline,
               controller: _firstNameController,
             ),
             const SizedBox(height: 20),
-            
+
             _buildEditField(
               label: 'Apellido',
               icon: Icons.person_outline,
               controller: _lastNameController,
             ),
             const SizedBox(height: 20),
-            
+
             _buildEditField(
               label: 'Teléfono',
               icon: Icons.phone_iphone_outlined,
@@ -154,18 +159,25 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: DropdownButtonFormField<String>(
                   value: _selectedCountry,
-                  icon: const Icon(Icons.arrow_drop_down, color: AppTheme.primaryBlue),
+                  icon: const Icon(
+                    Icons.arrow_drop_down,
+                    color: AppTheme.primaryBlue,
+                  ),
                   decoration: const InputDecoration(
                     labelText: 'País',
                     border: InputBorder.none,
-                    prefixIcon: Icon(Icons.location_on_outlined, color: AppTheme.primaryBlue),
+                    prefixIcon: Icon(
+                      Icons.location_on_outlined,
+                      color: AppTheme.primaryBlue,
+                    ),
                   ),
-                  items: _countries.map((String country) {
-                    return DropdownMenuItem<String>(
-                      value: country,
-                      child: Text(country),
-                    );
-                  }).toList(),
+                  items:
+                      _countries.map((String country) {
+                        return DropdownMenuItem<String>(
+                          value: country,
+                          child: Text(country),
+                        );
+                      }).toList(),
                   onChanged: (String? newValue) {
                     if (newValue != null) {
                       setState(() => _selectedCountry = newValue);
@@ -206,7 +218,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 16,
+          horizontal: 16,
+        ),
       ),
     );
   }

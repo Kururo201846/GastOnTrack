@@ -6,7 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gast_on_track/themes/app_theme.dart';
 import 'package:intl/intl.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 class ManualInvoiceScreen extends StatefulWidget {
   const ManualInvoiceScreen({super.key});
@@ -48,8 +47,7 @@ class _ManualInvoiceScreenState extends State<ManualInvoiceScreen> {
   }
 
   void _guardarBoleta() async {
-    if (_isSubmitting || productos.isEmpty || categoriaSeleccionada == null)
-      return;
+    if (_isSubmitting || productos.isEmpty || categoriaSeleccionada == null) return;
 
     setState(() => _isSubmitting = true);
     final user = FirebaseAuth.instance.currentUser;
@@ -109,9 +107,9 @@ class _ManualInvoiceScreenState extends State<ManualInvoiceScreen> {
     final formatter = NumberFormat.currency(locale: 'es_CL', symbol: '\$');
 
     return Scaffold(
-      backgroundColor: AppTheme.cream,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: AppTheme.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         iconTheme: IconThemeData(color: AppTheme.primaryBlue),
         title: Text(
           'Registro manual de boleta',
@@ -124,45 +122,67 @@ class _ManualInvoiceScreenState extends State<ManualInvoiceScreen> {
           DropdownButtonFormField<String>(
             decoration: const InputDecoration(
               labelText: 'Categoría',
+              fillColor: Colors.white,
+              filled: true,
               border: OutlineInputBorder(),
+              labelStyle: TextStyle(color: Colors.black),
             ),
+            dropdownColor: Colors.white,
             value: categoriaSeleccionada,
-            onChanged:
-                (value) => setState(() => categoriaSeleccionada = value),
-            items: categorias
-                .map(
-                  (cat) => DropdownMenuItem(value: cat, child: Text(cat)),
-                )
-                .toList(),
+            onChanged: (value) => setState(() => categoriaSeleccionada = value),
+            items: categorias.map((cat) {
+              return DropdownMenuItem(
+                value: cat,
+                child: Text(cat, style: const TextStyle(color: Colors.black)),
+              );
+            }).toList(),
           ),
           const SizedBox(height: 20),
           TextField(
             controller: _cantidadController,
+            keyboardType: TextInputType.number,
+            style: const TextStyle(color: Colors.black),
             decoration: const InputDecoration(
               labelText: 'Cantidad',
+              filled: true,
+              fillColor: Colors.white,
+              labelStyle: TextStyle(color: Colors.black),
+              hintStyle: TextStyle(color: Colors.black54),
               border: OutlineInputBorder(),
             ),
-            keyboardType: TextInputType.number,
           ),
           const SizedBox(height: 20),
           TextField(
             controller: _descripcionController,
+            style: const TextStyle(color: Colors.black),
             decoration: const InputDecoration(
               labelText: 'Descripción',
+              filled: true,
+              fillColor: Colors.white,
+              labelStyle: TextStyle(color: Colors.black),
+              hintStyle: TextStyle(color: Colors.black54),
               border: OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 20),
           TextField(
             controller: _precioController,
+            keyboardType: TextInputType.number,
+            style: const TextStyle(color: Colors.black),
             decoration: const InputDecoration(
               labelText: 'Precio',
+              filled: true,
+              fillColor: Colors.white,
+              labelStyle: TextStyle(color: Colors.black),
+              hintStyle: TextStyle(color: Colors.black54),
               border: OutlineInputBorder(),
             ),
-            keyboardType: TextInputType.number,
           ),
           const SizedBox(height: 20),
-          Text('Imagen de la boleta:', style: TextStyle(fontWeight: FontWeight.bold)),
+          const Text(
+            'Imagen de la boleta:',
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+          ),
           const SizedBox(height: 10),
           if (_selectedImage != null)
             Image.file(_selectedImage!, height: 120),
