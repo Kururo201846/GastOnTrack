@@ -66,20 +66,3 @@ class NotificationScreen extends StatelessWidget {
     );
   }
 }
-
-PopupMenuItem<String> _buildPopupMenuItem({
-  required IconData icon,
-  required String text,
-  required String value,
-}) {
-  return PopupMenuItem(
-    value: value,
-    child: Row(
-      children: [
-        Icon(icon, size: 20, color: AppTheme.primaryBlue),
-        const SizedBox(width: 8),
-        Text(text),
-      ],
-    ),
-  );
-}

@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:intl/intl.dart';
 import 'package:gast_on_track/screens/history/history_screen.dart';
 import 'package:gast_on_track/screens/roulette/roulette_screen.dart';
 import 'package:gast_on_track/themes/app_theme.dart';
@@ -38,7 +37,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _initNotifications() async {
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
     String? token = await FirebaseMessaging.instance.getToken();
     print('FCM Token: $token');
 
@@ -265,8 +263,6 @@ class _HomeContentState extends State<HomeContent> {
 
   @override
   Widget build(BuildContext context) {
-    final formatter = NumberFormat.currency(locale: 'es_CL', symbol: '\$');
-
     return SingleChildScrollView(
       padding: const EdgeInsets.all(15),
       child: Column(

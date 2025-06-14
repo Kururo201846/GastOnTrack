@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gast_on_track/models/user_profile.dart';
 import 'package:gast_on_track/themes/app_theme.dart';
 import 'profile_edit_screen.dart';
-import 'graph_screen.dart'; // <-- Importación añadida
+import 'graph_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});

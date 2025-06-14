@@ -5,7 +5,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:gast_on_track/themes/app_theme.dart';
-import 'dart:math';
 
 class GraphScreen extends StatefulWidget {
   const GraphScreen({super.key});
