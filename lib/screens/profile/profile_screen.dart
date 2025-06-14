@@ -155,27 +155,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   value: '\$400,000 CLP',
                   isAmount: true,
                 ),
-                const SizedBox(height: 10),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {},
-                    child: const Text(
-                      'Ver más detalles',
-                      style: TextStyle(decoration: TextDecoration.underline),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 30),
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Logros',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                _buildAchievementsSection(),
               ],
             ),
           );
@@ -230,37 +209,5 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
-
-  Widget _buildAchievementsSection() {
-    return Container(
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: AppTheme.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.shadows,
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          _buildAchievementItem('Primer ahorro', Icons.emoji_events),
-          _buildAchievementItem('Meta mensual', Icons.star),
-          _buildAchievementItem('Consistencia', Icons.timeline),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAchievementItem(String title, IconData icon) {
-    return ListTile(
-      leading: Icon(icon, color: AppTheme.primaryBlue),
-      title: Text(title),
-      trailing: const Icon(Icons.check_circle, color: AppTheme.successGreen),
-    );
-  }
 }
+

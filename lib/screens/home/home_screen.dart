@@ -138,11 +138,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       items: [
         _buildPopupMenuItem(
-          icon: Icons.settings,
-          text: 'Configuración',
-          value: 'settings',
-        ),
-        _buildPopupMenuItem(
           icon: Icons.lock,
           text: 'Cambiar contraseña',
           value: 'password',
