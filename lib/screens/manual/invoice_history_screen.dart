@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gast_on_track/themes/app_theme.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // ✅ NUEVO
 
 class InvoiceHistoryScreen extends StatelessWidget {
   const InvoiceHistoryScreen({super.key});
@@ -18,6 +19,12 @@ class InvoiceHistoryScreen extends StatelessWidget {
         .get();
 
     return query.docs.map((doc) => doc.data()).toList();
+  }
+
+  Future<void> _incrementHistorialCounter() async {
+    final prefs = await SharedPreferences.getInstance();
+    final count = prefs.getInt('historialVisto') ?? 0;
+    prefs.setInt('historialVisto', count + 1);
   }
 
   @override
@@ -107,6 +114,9 @@ class InvoiceHistoryScreen extends StatelessWidget {
                             color: Colors.black,
                           ),
                         ),
+                        onExpansionChanged: (expanded) {
+                          if (expanded) _incrementHistorialCounter(); // ✅ NUEVO
+                        },
                         children: [
                           if (imagenUrl != null)
                             Padding(

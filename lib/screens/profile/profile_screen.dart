@@ -4,7 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gast_on_track/models/user_profile.dart';
 import 'package:gast_on_track/themes/app_theme.dart';
 import 'profile_edit_screen.dart';
-import 'graph_screen.dart'; // <-- Importación añadida
+import 'graph_screen.dart';
+import 'achievements_screen.dart'; 
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -18,11 +19,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return null;
 
-    final snapshot =
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
 
     if (!snapshot.exists) return null;
 
@@ -175,7 +175,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                _buildAchievementsSection(),
+                _buildAchievementsSection(context), // ✅ CAMBIO
               ],
             ),
           );
@@ -231,27 +231,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildAchievementsSection() {
-    return Container(
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: AppTheme.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.shadows,
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          _buildAchievementItem('Primer ahorro', Icons.emoji_events),
-          _buildAchievementItem('Meta mensual', Icons.star),
-          _buildAchievementItem('Consistencia', Icons.timeline),
-        ],
+  Widget _buildAchievementsSection(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const AchievementsScreen()),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: AppTheme.white,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.shadows,
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            _buildAchievementItem('Primer ahorro', Icons.emoji_events),
+            _buildAchievementItem('Meta mensual', Icons.star),
+            _buildAchievementItem('Consistencia', Icons.timeline),
+          ],
+        ),
       ),
     );
   }

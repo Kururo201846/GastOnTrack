@@ -1,4 +1,4 @@
-import 'package:gast_on_track/screens/profile/settings_screen.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,6 +13,7 @@ import 'package:gast_on_track/screens/manual/invoice_history_screen.dart';
 import 'package:gast_on_track/screens/manual/manual_invoice_screen.dart';
 import 'package:gast_on_track/screens/notifications/notification_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:gast_on_track/screens/profile/settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final bool isDarkMode;

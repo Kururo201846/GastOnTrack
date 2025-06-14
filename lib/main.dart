@@ -7,7 +7,6 @@ import 'package:gast_on_track/screens/auth/create_user_screen.dart';
 import 'package:gast_on_track/screens/auth/recover_password_screen.dart';
 import 'package:gast_on_track/screens/history/history_screen.dart';
 import 'package:gast_on_track/screens/home/home_screen.dart';
-import 'package:gast_on_track/screens/profile/settings_screen.dart';
 import 'package:gast_on_track/themes/app_theme.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
