@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:gast_on_track/models/user_profile.dart';
 import 'package:gast_on_track/themes/app_theme.dart';
 import 'profile_edit_screen.dart';
@@ -43,6 +43,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (updatedProfile != null) {
       setState(() {});
     }
+  }
+
+  Future<double> _getTotalGastado() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return 0.0;
+
+    final query = await FirebaseFirestore.instance
+        .collection('boletas')
+        .where('uid', isEqualTo: user.uid)
+        .get();
+
+    double total = 0.0;
+    for (var doc in query.docs) {
+      final data = doc.data();
+      final productos = data.containsKey('productos') && data['productos'] is List
+          ? data['productos'] as List<dynamic>
+          : [];
+      for (var p in productos) {
+        total += double.tryParse(p['precio'].toString()) ?? 0;
+      }
+    }
+    return total;
   }
 
   @override
@@ -149,11 +171,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   value: profile.country,
                 ),
                 const SizedBox(height: 15),
-                _buildInfoCard(
-                  icon: Icons.savings,
-                  title: 'Total ahorrado',
-                  value: '\$400,000 CLP',
-                  isAmount: true,
+                FutureBuilder<double>(
+                  future: _getTotalGastado(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const CircularProgressIndicator();
+                    }
+                    final total = snapshot.data!;
+                    return _buildInfoCard(
+                      icon: Icons.savings,
+                      title: 'Total gastado',
+                      value: '\$${total.toStringAsFixed(0)} CLP',
+                      isAmount: true,
+                    );
+                  },
                 ),
               ],
             ),
