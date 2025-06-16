@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-# gast_on_track
+**GastOnTrack** 
+Es una aplicación móvil desarrollada en Flutter que permite escanear boletas, registrar gastos mensuales y visualizar estadísticas personales de consumo. Utiliza Firebase como backend para la autenticación y almacenamiento de datos.
 
-A new Flutter project.
-=======
-# GastOnTrack
-
->>>>>>> 20cc44614b9ea9217002a3eb5442bb73c38c6c6c
+Desarrollada por Nicolas Ubilla y Benjamin Guajardo para un trabajo de universidad
