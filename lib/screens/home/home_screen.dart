@@ -11,6 +11,7 @@ import 'package:gast_on_track/screens/manual/invoice_history_screen.dart';
 import 'package:gast_on_track/screens/manual/manual_invoice_screen.dart';
 import 'package:gast_on_track/screens/notifications/notification_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:gast_on_track/screens/settings/change_password_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -153,23 +154,19 @@ class _HomeScreenState extends State<HomeScreen> {
         FirebaseAuth.instance.signOut();
       } else if (value == 'settings') {
       } else if (value == 'password') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ChangePasswordScreen(),
+          ),
+        );
       } else if (value == 'notifications') {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => const NotificationScreen(),
-
-
-
-
           ),
         );
-
-
-
-
-
-
       }
     });
   }
