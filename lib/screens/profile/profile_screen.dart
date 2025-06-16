@@ -153,6 +153,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                 const SizedBox(height: 20),
 
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.emoji_events, color: AppTheme.white),
+                  label: const Text(
+                    'Logros',
+                    style: TextStyle(color: AppTheme.white),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryBlue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AchievementsScreen(),
+                      ),
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 20),
+
                 _buildInfoCard(
                   icon: Icons.email,
                   title: 'Email',
@@ -238,47 +266,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildAchievementsSection(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const AchievementsScreen()),
-        );
-      },
-      child: Container(
-        padding: const EdgeInsets.all(15),
-        decoration: BoxDecoration(
-          color: AppTheme.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: AppTheme.shadows,
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            _buildAchievementItem('Primer ahorro', Icons.emoji_events),
-            _buildAchievementItem('Meta mensual', Icons.star),
-            _buildAchievementItem('Consistencia', Icons.timeline),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAchievementItem(String title, IconData icon) {
-    return ListTile(
-      leading: Icon(icon, color: AppTheme.primaryBlue),
-      title: Text(title),
-      trailing: const Icon(Icons.check_circle, color: AppTheme.successGreen),
     );
   }
 }
