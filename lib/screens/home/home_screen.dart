@@ -46,6 +46,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${notification.title ?? ''}\n${notification.body ?? ''}'),
+
+
           ),
         );
       }
@@ -156,8 +158,18 @@ class _HomeScreenState extends State<HomeScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => const NotificationScreen(),
+
+
+
+
           ),
         );
+
+
+
+
+
+
       }
     });
   }
@@ -235,6 +247,7 @@ class _HomeContentState extends State<HomeContent> {
           .where('fecha', isGreaterThanOrEqualTo: primerDiaMes)
           .get();
 
+
       final Map<String, double> acumulado = {};
 
       for (var doc in query.docs) {
@@ -304,6 +317,7 @@ class _HomeContentState extends State<HomeContent> {
                 final productos = data.containsKey('productos') && data['productos'] is List
                     ? data['productos'] as List<dynamic>
                     : [];
+
                 for (var p in productos) {
                   total += double.tryParse(p['precio'].toString()) ?? 0;
                 }
@@ -387,4 +401,3 @@ String _normalizarCategoria(String cat) {
       .replaceAll('ú', 'u')
       .trim();
 }
-
