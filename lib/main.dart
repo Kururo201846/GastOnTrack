@@ -9,7 +9,6 @@ import 'package:gast_on_track/screens/history/history_screen.dart';
 import 'package:gast_on_track/screens/home/home_screen.dart';
 import 'package:gast_on_track/themes/app_theme.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -21,37 +20,11 @@ Future<void> main() async {
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  final prefs = await SharedPreferences.getInstance();
-  final isDarkMode = prefs.getBool('isDarkMode') ?? false;
-
-  runApp(MainApp(initialDarkMode: isDarkMode));
+  runApp(const MainApp());
 }
 
-class MainApp extends StatefulWidget {
-  final bool initialDarkMode;
-
-  const MainApp({super.key, required this.initialDarkMode});
-
-  @override
-  State<MainApp> createState() => _MainAppState();
-}
-
-class _MainAppState extends State<MainApp> {
-  late bool _isDarkMode;
-
-  @override
-  void initState() {
-    super.initState();
-    _isDarkMode = widget.initialDarkMode;
-  }
-
-  Future<void> _toggleTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _isDarkMode = !_isDarkMode;
-    });
-    await prefs.setBool('isDarkMode', _isDarkMode);
-  }
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -59,16 +32,12 @@ class _MainAppState extends State<MainApp> {
       title: 'Gast On Track',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      home: AuthWrapper(isDarkMode: _isDarkMode, toggleTheme: _toggleTheme),
+      home: const AuthWrapper(),
       routes: {
         '/login': (context) => const LoginScreen(),
         '/recover_password': (context) => const RecoverPasswordScreen(),
         '/signup': (context) => const CreateUserScreen(),
-        '/home':
-            (context) =>
-                HomeScreen(isDarkMode: _isDarkMode, toggleTheme: _toggleTheme),
+        '/home': (context) => const HomeScreen(),
         '/history': (context) => const HistoryScreen(),
       },
     );
@@ -76,14 +45,7 @@ class _MainAppState extends State<MainApp> {
 }
 
 class AuthWrapper extends StatelessWidget {
-  final bool isDarkMode;
-  final VoidCallback toggleTheme;
-
-  const AuthWrapper({
-    super.key,
-    required this.isDarkMode,
-    required this.toggleTheme,
-  });
+  const AuthWrapper({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +62,7 @@ class AuthWrapper extends StatelessWidget {
           return const LoginScreen();
         }
 
-        return HomeScreen(isDarkMode: isDarkMode, toggleTheme: toggleTheme);
+        return const HomeScreen();
       },
     );
   }

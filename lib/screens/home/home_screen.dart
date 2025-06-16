@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,17 +12,9 @@ import 'package:gast_on_track/screens/manual/invoice_history_screen.dart';
 import 'package:gast_on_track/screens/manual/manual_invoice_screen.dart';
 import 'package:gast_on_track/screens/notifications/notification_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:gast_on_track/screens/profile/settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  final bool isDarkMode;
-  final VoidCallback toggleTheme;
-
-  const HomeScreen({
-    super.key,
-    required this.isDarkMode,
-    required this.toggleTheme,
-  });
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -56,9 +47,9 @@ class _HomeScreenState extends State<HomeScreen> {
         final notification = message.notification!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              '${notification.title ?? ''}\n${notification.body ?? ''}',
-            ),
+            content: Text('${notification.title ?? ''}\n${notification.body ?? ''}'),
+
+
           ),
         );
       }
@@ -68,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: AppTheme.cream,
       appBar: _buildAppBar(),
       body: _screens[_currentIndex],
       bottomNavigationBar: _buildBottomNavigationBar(),
@@ -85,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
           fontWeight: FontWeight.bold,
         ),
       ),
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: AppTheme.white,
       elevation: 0,
       leading: IconButton(
         icon: Icon(Icons.menu, color: AppTheme.primaryBlue),
@@ -111,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return BottomNavigationBar(
       currentIndex: _currentIndex,
       type: BottomNavigationBarType.fixed,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: AppTheme.white,
       selectedItemColor: AppTheme.primaryBlue,
       unselectedItemColor: AppTheme.textSecondary,
       selectedLabelStyle: TextStyle(color: AppTheme.primaryBlue),
@@ -168,22 +159,24 @@ class _HomeScreenState extends State<HomeScreen> {
       if (value == 'logout') {
         FirebaseAuth.instance.signOut();
       } else if (value == 'settings') {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder:
-                (context) => SettingsScreen(
-                  isDarkMode: widget.isDarkMode,
-                  toggleTheme: widget.toggleTheme,
-                ),
-          ),
-        );
       } else if (value == 'password') {
       } else if (value == 'notifications') {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const NotificationScreen()),
+          MaterialPageRoute(
+            builder: (context) => const NotificationScreen(),
+
+
+
+
+          ),
         );
+
+
+
+
+
+
       }
     });
   }
@@ -255,20 +248,21 @@ class _HomeContentState extends State<HomeContent> {
       final now = DateTime.now();
       final primerDiaMes = DateTime(now.year, now.month, 1);
 
-      final query =
-          await FirebaseFirestore.instance
-              .collection('boletas')
-              .where('uid', isEqualTo: user.uid)
-              .where('fecha', isGreaterThanOrEqualTo: primerDiaMes)
-              .get();
+      final query = await FirebaseFirestore.instance
+          .collection('boletas')
+          .where('uid', isEqualTo: user.uid)
+          .where('fecha', isGreaterThanOrEqualTo: primerDiaMes)
+          .get();
+
 
       final Map<String, double> acumulado = {};
 
       for (var doc in query.docs) {
         final data = doc.data();
         final categoria = _normalizarCategoria(data['categoria'] ?? 'otros');
-        final productos =
-            (data['productos'] is List) ? data['productos'] as List : [];
+        final productos = (data['productos'] is List)
+            ? data['productos'] as List
+            : [];
 
         for (var p in productos) {
           if (p is Map && p.containsKey('precio')) {
@@ -329,10 +323,10 @@ class _HomeContentState extends State<HomeContent> {
               double total = 0;
               for (var doc in snapshot.data!.docs) {
                 final data = doc.data() as Map<String, dynamic>;
-                final productos =
-                    data.containsKey('productos') && data['productos'] is List
-                        ? data['productos'] as List<dynamic>
-                        : [];
+                final productos = data.containsKey('productos') && data['productos'] is List
+                    ? data['productos'] as List<dynamic>
+                    : [];
+
                 for (var p in productos) {
                   total += double.tryParse(p['precio'].toString()) ?? 0;
                 }
@@ -363,7 +357,10 @@ class _HomeContentState extends State<HomeContent> {
               }
               final gastos = snapshot.data ?? {};
               if (gastos.isEmpty) {
-                return CategoriesCard(gastosPorCategoria: {}, totalMes: 0);
+                return CategoriesCard(
+                  gastosPorCategoria: {},
+                  totalMes: 0,
+                );
               }
               return CategoriesCard(
                 gastosPorCategoria: gastos,
@@ -412,50 +409,4 @@ String _normalizarCategoria(String cat) {
       .replaceAll('ó', 'o')
       .replaceAll('ú', 'u')
       .trim();
-}
-
-class SettingsScreen extends StatefulWidget {
-  final bool isDarkMode;
-  final VoidCallback toggleTheme;
-
-  const SettingsScreen({
-    super.key,
-    required this.isDarkMode,
-    required this.toggleTheme,
-  });
-
-  @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
-}
-
-class _SettingsScreenState extends State<SettingsScreen> {
-  late bool _isDark;
-
-  @override
-  void initState() {
-    super.initState();
-    _isDark = widget.isDarkMode;
-  }
-
-  void _onToggleDarkMode(bool value) {
-    setState(() => _isDark = value);
-    widget.toggleTheme();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Configuración')),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
-        children: [
-          SwitchListTile(
-            title: const Text('Modo oscuro'),
-            value: _isDark,
-            onChanged: _onToggleDarkMode,
-          ),
-        ],
-      ),
-    );
-  }
 }
