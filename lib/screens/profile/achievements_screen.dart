@@ -20,11 +20,9 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
   Future<void> _loadAchievements() async {
     final prefs = await SharedPreferences.getInstance();
 
-    // 1. Ruleta usada
     final ruletaHistory = prefs.getStringList('rouletteHistory') ?? [];
     final ruletaCount = ruletaHistory.length;
 
-    // 2. Contar 3 "NO" seguidos
     int consecutivosNo = 0;
     for (final entry in ruletaHistory.reversed) {
       if (entry.contains('NO')) {
@@ -35,12 +33,8 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
       }
     }
 
-    // 3. Boletas registradas (simulado aquí, puedes conectar a Firestore)
-    final int boletasRegistradas = prefs.getInt('boletasRegistradas') ?? 1;
-
-    // 4. Historial visto
+    final int boletasRegistradas = prefs.getInt('boletasRegistradas') ?? 0;
     final int historialCount = prefs.getInt('historialVisto') ?? 0;
-    print('Historial visto: $historialCount');
 
     setState(() {
       achievements = [
@@ -80,107 +74,105 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: _loadAchievements, // ✅ Botón para recargar datos
+            onPressed: _loadAchievements,
           ),
         ],
       ),
-      body:
-          achievements.isEmpty
-              ? const Center(child: CircularProgressIndicator())
-              : GridView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: achievements.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 0.9,
-                ),
-                itemBuilder: (context, index) {
-                  final a = achievements[index];
-                  final progress = (a['current'] / a['goal']).clamp(0.0, 1.0);
-                  final unlocked = a['current'] >= a['goal'];
-
-                  return GestureDetector(
-                    onTap: () {
-                      if (unlocked) {
-                        showDialog(
-                          context: context,
-                          builder:
-                              (_) => AlertDialog(
-                                content: Text('¡${a['description']}!'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    child: const Text('Aceptar'),
-                                  ),
-                                ],
-                              ),
-                        );
-                      }
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: const [
-                          BoxShadow(
-                            blurRadius: 4,
-                            color: Colors.black12,
-                            offset: Offset(2, 2),
-                          ),
-                        ],
-                      ),
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              SizedBox(
-                                width: 64,
-                                height: 64,
-                                child: CircularProgressIndicator(
-                                  value: progress,
-                                  strokeWidth: 5,
-                                  color: unlocked ? Colors.green : Colors.grey,
-                                ),
-                              ),
-                              Icon(
-                                Icons.emoji_events,
-                                size: 32,
-                                color: unlocked ? Colors.amber : Colors.grey,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            a['title'],
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                              color: unlocked ? Colors.black : Colors.grey,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            a['description'],
-                            style: const TextStyle(fontSize: 12),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            '${a['current']}/${a['goal']}',
-                            style: const TextStyle(fontSize: 11),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
+      body: achievements.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : GridView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: achievements.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisExtent: 210, // 👈 Aumentado para evitar overflow
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
               ),
+              itemBuilder: (context, index) {
+                final a = achievements[index];
+                final progress = (a['current'] / a['goal']).clamp(0.0, 1.0);
+                final unlocked = a['current'] >= a['goal'];
+
+                return GestureDetector(
+                  onTap: () {
+                    if (unlocked) {
+                      showDialog(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                          content: Text('¡${a['description']}!'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('Aceptar'),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: const [
+                        BoxShadow(
+                          blurRadius: 4,
+                          color: Colors.black12,
+                          offset: Offset(2, 2),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            SizedBox(
+                              width: 64,
+                              height: 64,
+                              child: CircularProgressIndicator(
+                                value: progress,
+                                strokeWidth: 5,
+                                color: unlocked ? Colors.green : Colors.grey,
+                              ),
+                            ),
+                            Icon(
+                              Icons.emoji_events,
+                              size: 32,
+                              color: unlocked ? Colors.amber : Colors.grey,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          a['title'],
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: unlocked ? Colors.black : Colors.grey,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          a['description'],
+                          style: const TextStyle(fontSize: 12),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          '${a['current']}/${a['goal']}',
+                          style: const TextStyle(fontSize: 11),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
     );
   }
 }

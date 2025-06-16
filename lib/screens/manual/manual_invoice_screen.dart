@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gast_on_track/themes/app_theme.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // ✅ NUEVO
 
 class ManualInvoiceScreen extends StatefulWidget {
   const ManualInvoiceScreen({super.key});
@@ -46,6 +47,14 @@ class _ManualInvoiceScreenState extends State<ManualInvoiceScreen> {
     });
   }
 
+  // ✅ NUEVO: función para activar logro
+  Future<void> _activarLogroPrimeraBoleta() async {
+    final prefs = await SharedPreferences.getInstance();
+    int count = prefs.getInt('boletasRegistradas') ?? 0;
+    count++;
+    await prefs.setInt('boletasRegistradas', count);
+  }
+
   void _guardarBoleta() async {
     if (_isSubmitting || productos.isEmpty || categoriaSeleccionada == null) return;
 
@@ -70,6 +79,8 @@ class _ManualInvoiceScreenState extends State<ManualInvoiceScreen> {
         'fecha': Timestamp.now(),
         'imagenBase64': imageBase64,
       });
+
+      await _activarLogroPrimeraBoleta(); // ✅ Registro de logro
 
       if (!mounted) return;
 
